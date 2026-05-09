@@ -1,0 +1,48 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Git Commit Messages
+
+All commit messages should follow the following rules:
+- Use the present tense.
+- Start with a verb, capitalize the first letter.
+- No punctuations and symbols.
+- Use the imperative mood.
+- Keep it short and to the point.
+
+## Commands
+
+```bash
+npm run dev        # start dev server (Vite HMR)
+npm run build      # tsc type-check + production build
+npm run lint       # ESLint across all files
+npm run preview    # serve the production build locally
+```
+
+There is no test runner configured yet.
+
+## Stack
+
+| Layer | Choice |
+|---|---|
+| Framework | React 19 + TypeScript 6 |
+| Bundler | Vite 8 |
+| UI components | MUI v9 (emotion-based) |
+| Styling | Tailwind CSS v4 + scoped CSS modules |
+| Linting | ESLint 10 + typescript-eslint + eslint-config-prettier |
+| Formatting | Prettier 3 |
+| Utilities | clsx |
+
+## Architecture
+
+Entry: `index.html` → `src/main.tsx` → `src/App.tsx`
+
+**Tailwind + MUI coexistence** — two deliberate choices keep them from conflicting:
+
+1. `src/index.css` imports only Tailwind's `theme` and `utilities` layers — preflight is intentionally excluded so MUI component base styles are not reset.
+2. `src/main.tsx` wraps the tree in `<StyledEngineProvider injectFirst>`, which places emotion-injected MUI styles at the top of `<head>` so Tailwind utility classes always win specificity battles when applied.
+
+**CSS approach** — global design tokens live as CSS custom properties in `:root` inside `src/index.css` (colors, typography, shadows). Component-scoped styles live in co-located `.css` files (e.g. `App.css`). Use Tailwind utilities for layout and spacing; reach for MUI components for interactive UI elements; use `clsx` to compose conditional class names.
+
+**TypeScript** is configured in bundler mode with strict unused-variable checking (`noUnusedLocals`, `noUnusedParameters`). `erasableSyntaxOnly` is enabled — avoid TypeScript-only syntax that emits runtime code (e.g. `enum`, parameter properties).
