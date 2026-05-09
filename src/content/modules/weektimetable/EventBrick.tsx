@@ -7,13 +7,13 @@ type Props = {
 }
 
 export default function EventBrick({ event }: Props) {
-  const isShort = event.endHour - event.startHour < SHORT_THRESHOLD
+  const isShort = event.duration < SHORT_THRESHOLD
 
   return (
     <div data-testid={`event-brick-${event.id}`} className="flex-1 w-full flex items-center rounded-md bg-brand-primary p-1 overflow-hidden">
       {!isShort && (
         <span className="text-small text-white font-medium whitespace-nowrap select-none">
-          {formatHour(event.startHour)}-{formatHour(event.endHour)}
+          {formatHour(event.startTime)}-{formatHour(event.startTime + event.duration)}
         </span>
       )}
     </div>

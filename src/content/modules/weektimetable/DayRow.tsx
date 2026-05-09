@@ -2,7 +2,7 @@ import clsx from 'clsx'
 import type { CalendarEvent } from '../../types'
 import EventRow from './EventRow'
 
-interface Props {
+type Props = {
   dayIndex: number
   focused: boolean
   events: CalendarEvent[]
@@ -10,8 +10,8 @@ interface Props {
 }
 
 export default function DayRow({ dayIndex, focused, events, scrollLeft }: Props) {
-  const primaryEvents = events.filter((e) => e.track === 'primary')
-  const secondaryEvents = events.filter((e) => e.track === 'secondary')
+  const primaryEvents = events.filter((e) => e.row === 'primary')
+  const secondaryEvents = events.filter((e) => e.row === 'secondary')
 
   const primaryEventRow = (
     <EventRow variant="primary" events={primaryEvents} scrollLeft={scrollLeft} />

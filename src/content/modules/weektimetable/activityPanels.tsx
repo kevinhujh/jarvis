@@ -23,7 +23,7 @@ function computeDayAllocation(events: CalendarEvent[], dayIndex: number): HourSl
       const slotStart = hour + slot / SLOTS_PER_HOUR
       const slotEnd = slotStart + 1 / SLOTS_PER_HOUR
       if (
-        events.some((e) => e.day === dayIndex && e.startHour < slotEnd && e.endHour > slotStart)
+        events.some((e) => e.day === dayIndex && e.startTime < slotEnd && e.startTime + e.duration > slotStart)
       ) {
         allocatedSlots++
       }
@@ -40,7 +40,7 @@ function computeWeekDensity(events: CalendarEvent[]): number[] {
       for (let slot = 0; slot < SLOTS_PER_HOUR; slot++) {
         const slotStart = hour + slot / SLOTS_PER_HOUR
         const slotEnd = slotStart + 1 / SLOTS_PER_HOUR
-        if (events.some((e) => e.day === day && e.startHour < slotEnd && e.endHour > slotStart)) {
+        if (events.some((e) => e.day === day && e.startTime < slotEnd && e.startTime + e.duration > slotStart)) {
           total++
         }
       }

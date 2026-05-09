@@ -12,9 +12,9 @@ export default function EventLabel({ event, scrollLeft }: Props) {
   const labelRef = useRef<HTMLDivElement>(null)
   const [labelWidth, setLabelWidth] = useState(0)
 
-  const brickLeft = event.startHour * HOUR_WIDTH
-  const brickWidth = (event.endHour - event.startHour) * HOUR_WIDTH
-  const isShort = event.endHour - event.startHour < SHORT_THRESHOLD
+  const brickLeft = event.startTime * HOUR_WIDTH
+  const brickWidth = event.duration * HOUR_WIDTH
+  const isShort = event.duration < SHORT_THRESHOLD
 
   useEffect(() => {
     if (labelRef.current) setLabelWidth(labelRef.current.offsetWidth)

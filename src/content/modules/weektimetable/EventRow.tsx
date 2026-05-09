@@ -21,8 +21,8 @@ export default function EventRow({ variant, events, scrollLeft }: Props) {
       )}
     >
       {events.map((event) => {
-        const left = event.startHour * HOUR_WIDTH
-        const brickWidth = (event.endHour - event.startHour) * HOUR_WIDTH
+        const left = event.startTime * HOUR_WIDTH
+        const brickWidth = event.duration * HOUR_WIDTH
 
         return (
           <div

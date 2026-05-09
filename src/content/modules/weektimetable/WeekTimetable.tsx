@@ -46,10 +46,10 @@ export default function WeekTimetable() {
     if (!isCurrentWeek) return
     const todayEvents = mockEvents
       .filter((e) => e.day === todayDayIndex)
-      .sort((a, b) => a.startHour - b.startHour)
+      .sort((a, b) => a.startTime - b.startTime)
 
     if (todayEvents.length > 0 && scrollRef.current) {
-      const target = Math.max(0, todayEvents[0].startHour * HOUR_WIDTH - 40)
+      const target = Math.max(0, todayEvents[0].startTime * HOUR_WIDTH - 40)
       scrollRef.current.scrollLeft = target
       setScrollLeft(target)
     }
