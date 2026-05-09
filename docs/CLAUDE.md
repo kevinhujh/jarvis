@@ -123,15 +123,15 @@ type CalendarEvent = {
 
 ---
 
-### Drag and drop (planned — not yet implemented)
+### Drag and drop
 
-Six incremental commits:
+Six incremental steps; only step 6 remains:
 
 1. **Data model** — migrate `mockEvents` to `startHour + duration` shape; add `flexible` flag; remove `endHour` from storage
 2. **Drop zones + snapping grid** — overlay invisible 5-minute snap cells across each `EventRow`; show hover highlight on valid drop targets; no actual placement yet
 3. **Place from library** — drag a template card from `EventLibrary` onto a snap cell; event appears at that position
 4. **Relocate from grid** — drag an existing brick to a new position within the grid; remove from old slot, insert at new slot
-5. **Push mechanics** — when a flexible event would overlap another flexible event, push the chain forward; show a red shake animation if the chain hits an inflexible event or a day boundary (fail state, no mutation)
+5. **Push mechanics** — when a flexible event would overlap another, push the chain in the direction implied by the drop position; show a red shake animation if the chain hits an inflexible event or a day boundary (fail state, no mutation)
 6. **Edge resize** — drag the right edge of a brick to extend or shrink duration in 5-minute increments
 
 #### Push cascade rules
@@ -139,7 +139,7 @@ Six incremental commits:
 - A **flexible** event can be displaced by an incoming event or another cascade.
 - An **inflexible** event cannot move; if a cascade reaches one, the entire drag fails (animated shake, no mutation).
 - Day boundaries (hour 0, hour 24) are treated as inflexible anchors — events cannot be pushed past midnight.
-- Push direction: always forward (later in the day). No backward push.
+- Push direction follows the drop: events whose start precedes the drop are pushed backward (earlier); events whose start matches or follows the drop are pushed forward (later). This preserves the lead/trail ordering implied by where the user dropped the event.
 
 #### Snapping
 

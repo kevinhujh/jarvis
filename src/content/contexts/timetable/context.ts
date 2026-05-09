@@ -12,7 +12,7 @@ export type TimetableContextProps = {
   setSelectedDayChart: (id: string) => void
   events: CalendarEvent[]
   templates: EventTemplate[]
-  tryPlace: (source: DragSource, day: number, row: EventRow, startTime: number) => void
+  tryPlace: (source: DragSource, day: number, row: EventRow, startTime: number) => boolean
   dragSource: DragSource | null
   startDrag: (source: DragSource) => void
   endDrag: () => void

@@ -3,7 +3,8 @@ import clsx from 'clsx'
 import { SNAP_WIDTH, SNAPS_PER_HOUR, HOUR_WIDTH } from './constants'
 import type { EventRow } from '../../types'
 import { useTimetableContext } from '../../contexts/timetable/useTimetableContext'
-import { findConflicts } from './dndUtils'
+import { computeCascade } from './dndUtils'
+import type { CascadeResult } from './dndUtils'
 
 type Props = {
   day: number
@@ -14,15 +15,16 @@ function xToCell(clientX: number, el: HTMLElement): number {
   return Math.floor((clientX - el.getBoundingClientRect().left) / SNAP_WIDTH)
 }
 
-function conflictClass(conflicts: { flexible: boolean }[]): string {
-  if (conflicts.some((e) => !e.flexible)) return 'bg-red'
-  if (conflicts.length > 0) return 'bg-yellow'
+function cascadeClass(cascade: CascadeResult): string {
+  if (!cascade.success) return 'bg-red'
+  if (cascade.moves.size > 0) return 'bg-yellow'
   return 'bg-green'
 }
 
 export default function SnapGrid({ day, row }: Props) {
   const { templates, events, dragSource, tryPlace, endDrag } = useTimetableContext()
   const [hoveredCell, setHoveredCell] = useState<number | null>(null)
+  const [isShaking, setIsShaking] = useState(false)
 
   const draggingTemplate =
     dragSource?.kind === 'template'
@@ -33,6 +35,11 @@ export default function SnapGrid({ day, row }: Props) {
       ? (events.find((e) => e.id === dragSource.eventId) ?? null)
       : null
   const isDraggingInflexibleTemplate = draggingTemplate !== null && !draggingTemplate.flexible
+
+  const triggerShake = useCallback(() => {
+    setIsShaking(true)
+    setTimeout(() => setIsShaking(false), 400)
+  }, [])
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     setHoveredCell(xToCell(e.clientX, e.currentTarget))
@@ -54,18 +61,19 @@ export default function SnapGrid({ day, row }: Props) {
       e.stopPropagation()
       if (!dragSource) return
       const cell = xToCell(e.clientX, e.currentTarget)
-      tryPlace(dragSource, day, row, cell / SNAPS_PER_HOUR)
+      const ok = tryPlace(dragSource, day, row, cell / SNAPS_PER_HOUR)
+      if (!ok) triggerShake()
       endDrag()
       setHoveredCell(null)
     },
-    [dragSource, tryPlace, endDrag, day, row]
+    [dragSource, tryPlace, endDrag, triggerShake, day, row]
   )
 
   // Compute highlight
   let highlight: React.ReactNode = null
 
   if (draggingTemplate && !draggingTemplate.flexible) {
-    const conflicts = findConflicts(
+    const cascade = computeCascade(
       events,
       day,
       row,
@@ -74,21 +82,38 @@ export default function SnapGrid({ day, row }: Props) {
     )
     highlight = (
       <div
-        className={clsx('absolute inset-y-0 opacity-40 pointer-events-none', conflictClass(conflicts))}
+        className={clsx('absolute inset-y-0 opacity-40 pointer-events-none', cascadeClass(cascade))}
         style={{
           left: draggingTemplate.startTime * HOUR_WIDTH,
           width: draggingTemplate.duration * HOUR_WIDTH,
         }}
       />
     )
+  } else if (draggingTemplate?.flexible && hoveredCell !== null) {
+    const startTime = hoveredCell / SNAPS_PER_HOUR
+    const cascade = computeCascade(events, day, row, startTime, draggingTemplate.duration)
+    highlight = (
+      <div
+        className={clsx('absolute inset-y-0 opacity-40 pointer-events-none', cascadeClass(cascade))}
+        style={{
+          left: hoveredCell * SNAP_WIDTH,
+          width: draggingTemplate.duration * HOUR_WIDTH,
+        }}
+      />
+    )
   } else if (draggingEvent && hoveredCell !== null) {
     const startTime = hoveredCell / SNAPS_PER_HOUR
-    const conflicts = findConflicts(events, day, row, startTime, draggingEvent.duration).filter(
-      (e) => e.id !== draggingEvent.id
+    const cascade = computeCascade(
+      events,
+      day,
+      row,
+      startTime,
+      draggingEvent.duration,
+      draggingEvent.id
     )
     highlight = (
       <div
-        className={clsx('absolute inset-y-0 opacity-40 pointer-events-none', conflictClass(conflicts))}
+        className={clsx('absolute inset-y-0 opacity-40 pointer-events-none', cascadeClass(cascade))}
         style={{
           left: hoveredCell * SNAP_WIDTH,
           width: draggingEvent.duration * HOUR_WIDTH,
@@ -106,7 +131,7 @@ export default function SnapGrid({ day, row }: Props) {
 
   return (
     <div
-      className="absolute inset-0"
+      className={clsx('absolute inset-0', isShaking && 'animate-shake bg-red/20')}
       onMouseMove={isDraggingInflexibleTemplate ? undefined : handleMouseMove}
       onMouseLeave={handleClearHover}
       onDragOver={handleDragOver}

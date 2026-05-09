@@ -55,7 +55,7 @@ export default function EventRow({ variant, day, events, scrollLeft }: Props) {
             }
             onDragEnd={event.flexible ? endDrag : undefined}
             className={clsx(
-              'absolute inset-y-0 overflow-hidden flex flex-col py-1 gap-1',
+              'group absolute inset-y-0 flex flex-col py-1 gap-1 hover:z-20',
               event.flexible && 'cursor-grab active:cursor-grabbing',
               dragSource !== null && 'pointer-events-none'
             )}

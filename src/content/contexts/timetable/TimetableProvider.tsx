@@ -5,6 +5,7 @@ import type { DragSource } from './context'
 import type { CalendarEvent, EventRow } from '../../types'
 import { mockEvents } from '../../modules/weektimetable/mockData'
 import { mockTemplates } from '../../modules/weektimetable/mockTemplates'
+import { computeCascade } from '../../modules/weektimetable/dndUtils'
 
 type Props = { children: ReactNode }
 
@@ -14,6 +15,10 @@ export default function TimetableProvider({ children }: Props) {
   const [events, setEvents] = useState<CalendarEvent[]>(mockEvents)
   const [dragSource, setDragSource] = useState<DragSource | null>(null)
   const templates = mockTemplates
+
+  // Ref keeps tryPlace reading fresh event state without listing events as a dep
+  const eventsRef = useRef(events)
+  eventsRef.current = events
 
   const scrollFnRef = useRef<((time: number) => void) | null>(null)
   const registerScrollToTime = useCallback((fn: (time: number) => void) => {
@@ -35,28 +40,65 @@ export default function TimetableProvider({ children }: Props) {
   }, [])
 
   const tryPlace = useCallback(
-    (source: DragSource, day: number, row: EventRow, startTime: number) => {
+    (source: DragSource, day: number, row: EventRow, startTime: number): boolean => {
       if (source.kind === 'template') {
         const template = templates.find((t) => t.id === source.templateId)
-        if (!template) return
-        const finalStart = template.flexible ? startTime : template.startTime
+        if (!template) return false
+
+        const actualStart = template.flexible ? startTime : template.startTime
+        const cascade = computeCascade(
+          eventsRef.current,
+          day,
+          row,
+          actualStart,
+          template.duration
+        )
+        if (!cascade.success) return false
+
         const newEvent: CalendarEvent = {
           id: crypto.randomUUID(),
           templateId: source.templateId,
           day,
-          startTime: finalStart,
+          startTime: actualStart,
           duration: template.duration,
           title: template.title,
           category: template.category,
           row,
           flexible: template.flexible,
         }
-        setEvents((prev) => [...prev, newEvent])
-        return
+
+        setEvents((prev) => {
+          const updated = prev.map((e) =>
+            cascade.moves.has(e.id) ? { ...e, startTime: cascade.moves.get(e.id)! } : e
+          )
+          return [...updated, newEvent]
+        })
+
+        return true
       }
-      setEvents((prev) =>
-        prev.map((e) => (e.id === source.eventId ? { ...e, day, row, startTime } : e))
+
+      const moving = eventsRef.current.find((e) => e.id === source.eventId)
+      if (!moving) return false
+
+      const cascade = computeCascade(
+        eventsRef.current,
+        day,
+        row,
+        startTime,
+        moving.duration,
+        source.eventId
       )
+      if (!cascade.success) return false
+
+      setEvents((prev) =>
+        prev.map((e) => {
+          if (e.id === source.eventId) return { ...e, day, row, startTime }
+          if (cascade.moves.has(e.id)) return { ...e, startTime: cascade.moves.get(e.id)! }
+          return e
+        })
+      )
+
+      return true
     },
     [templates]
   )

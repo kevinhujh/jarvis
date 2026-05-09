@@ -29,7 +29,9 @@ export default function EventLabel({ event, scrollLeft }: Props) {
       ref={labelRef}
       data-testid={`event-label-${event.id}`}
       className={clsx(
-        'flex items-center self-start bg-brand-secondary/70 px-1 rounded-md text-small font-medium text-white',
+        'flex items-center self-start px-1 rounded-md text-small',
+        'font-medium text-white transition bg-brand-secondary/70',
+        'group-hover:ring-surface-primary group-hover:ring group-hover:bg-brand-primary',
         !isShort && 'max-w-full'
       )}
       style={{ transform: `translateX(${offsetX}px)` }}
