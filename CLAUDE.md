@@ -39,7 +39,9 @@ There is no test runner configured yet.
 
 ## Architecture
 
-Entry: `index.html` → `src/main.tsx` → `src/App.tsx`
+Entry: `index.html` → `src/main.tsx` → `src/App.tsx` → `src/Workspace.tsx`
+
+`App.tsx` is a thin entry point — no logic, no layout. `Workspace.tsx` is the layout and logic owner: it holds top-level state, wires providers, and handles view switching.
 
 **Tailwind + MUI coexistence** — two deliberate choices keep them from conflicting:
 
