@@ -9,6 +9,7 @@ import TimeAxisHeader from './TimeAxisHeader'
 import DayLabelColumn from './DayLabelColumn'
 import DayRow from './DayRow'
 import EventLibrary from './EventLibrary'
+import GridGuides from './GridGuides'
 import { WeekDensityPanel, DayDensityPanel } from './activityPanels'
 import clsx from 'clsx'
 
@@ -37,10 +38,10 @@ export default function WeekTimetable() {
     registerScrollToTime((time: number) => {
       if (!scrollRef.current) return
       const el = scrollRef.current
-      const target = Math.max(0, Math.min(
-        time * HOUR_WIDTH - el.clientWidth / 2,
-        el.scrollWidth - el.clientWidth
-      ))
+      const target = Math.max(
+        0,
+        Math.min(time * HOUR_WIDTH - el.clientWidth / 2, el.scrollWidth - el.clientWidth)
+      )
       el.scrollTo({ left: target, behavior: 'smooth' })
     })
   }, [registerScrollToTime])
@@ -112,18 +113,18 @@ export default function WeekTimetable() {
         <div
           data-testid="week-timetable-summary"
           style={{ minHeight: SUMMARY_MIN_HEIGHT }}
-          className="shrink-0 rounded-md ring ring-border-primary bg-surface-primary flex flex-col"
+          className="flex-1 shrink-0 rounded-md ring ring-border-primary bg-surface-primary flex flex-col"
         >
-          <div className="flex-1 min-h-0 p-3 border-b border-border-primary">
+          <div className="flex-1 min-h-0 p-4 border-b border-border-primary">
             <WeekDensityPanel events={events} />
           </div>
-          <div className="flex-1 min-h-0 p-3">
+          <div className="flex-1 min-h-0 p-4">
             <DayDensityPanel events={events} focusedDay={focusedDay} />
           </div>
         </div>
 
         {/* Timetable grid */}
-        <div className="flex flex-1 min-h-0 gap-4">
+        <div data-testid="week-timetable-grid" className="flex flex-1 gap-4">
           <DayLabelColumn
             days={days}
             todayDayIndex={isCurrentWeek ? todayDayIndex : -1}
@@ -131,20 +132,26 @@ export default function WeekTimetable() {
             onDayClick={handleDayClick}
           />
 
-          <div className="flex-1 flex flex-col min-w-0 rounded-md ring ring-border-primary bg-surface-primary">
-            <div ref={scrollRef} onScroll={handleScroll} className="flex-1 min-w-0 overflow-x-auto">
-              <div style={{ width: TRACK_WIDTH }}>
-                <TimeAxisHeader />
-                {days.map((_, i) => (
-                  <DayRow
-                    key={i}
-                    dayIndex={i}
-                    focused={focusedDay === null || focusedDay === i}
-                    events={events.filter((e) => e.day === i)}
-                    scrollLeft={scrollLeft}
-                  />
-                ))}
-              </div>
+          <div
+            ref={scrollRef}
+            onScroll={handleScroll}
+            className={clsx(
+              'flex-1 flex flex-col min-w-0 overflow-x-auto',
+              'rounded-md ring ring-border-primary bg-surface-primary'
+            )}
+          >
+            <div style={{ width: TRACK_WIDTH }} className="relative">
+              <TimeAxisHeader />
+              {days.map((_, i) => (
+                <DayRow
+                  key={i}
+                  dayIndex={i}
+                  focused={focusedDay === null || focusedDay === i}
+                  events={events.filter((e) => e.day === i)}
+                  scrollLeft={scrollLeft}
+                />
+              ))}
+              <GridGuides />
             </div>
           </div>
         </div>
@@ -152,7 +159,7 @@ export default function WeekTimetable() {
 
       {/* Library pull tab */}
       <div
-        className="shrink-0 w-10 flex flex-col items-center justify-center gap-3 cursor-pointer rounded-md ring ring-border-primary bg-surface-primary text-content-secondary hover:text-content-primary transition-colors select-none"
+        className="shrink-0 w-10 flex flex-col items-center justify-center gap-4 cursor-pointer rounded-md ring ring-border-primary bg-surface-primary text-content-secondary hover:text-content-primary transition-colors select-none"
         onClick={() => setIsLibraryOpen((prev) => !prev)}
       >
         {isLibraryOpen ? (
@@ -173,7 +180,7 @@ export default function WeekTimetable() {
         )}
       >
         <div className="w-[260px] h-full flex flex-col min-h-0">
-          <div className="shrink-0 px-3 py-2 border-b border-border-primary">
+          <div className="shrink-0 px-4 py-2 border-b border-border-primary">
             <span className="text-small text-content-secondary uppercase tracking-widest">
               Event Templates
             </span>

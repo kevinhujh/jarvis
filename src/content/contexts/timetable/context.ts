@@ -5,6 +5,14 @@ export type DragSource =
   | { kind: 'template'; templateId: string }
   | { kind: 'event'; eventId: string }
 
+export type GuideMode = 'hover' | 'drag'
+
+export type GuideState = {
+  startTime: number
+  endTime: number
+  mode: GuideMode
+}
+
 export type TimetableContextProps = {
   selectedWeekChart: string
   setSelectedWeekChart: (id: string) => void
@@ -19,6 +27,8 @@ export type TimetableContextProps = {
   endDrag: () => void
   scrollToTime: (time: number) => void
   registerScrollToTime: (fn: (time: number) => void) => void
+  guides: GuideState | null
+  setGuides: (guides: GuideState | null) => void
 }
 
 export const TimetableContext = createContext<TimetableContextProps>(null!)

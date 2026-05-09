@@ -33,7 +33,7 @@ export default function MiniCalendar() {
   return (
     <div
       data-testid="mini-calendar"
-      className="rounded-md ring ring-border-primary bg-surface-primary p-3 select-none"
+      className="rounded-md ring ring-border-primary bg-surface-primary p-4 select-none"
     >
       <div className="flex items-center justify-between mb-2 gap-4">
         <button

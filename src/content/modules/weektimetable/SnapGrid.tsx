@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import clsx from 'clsx'
 import { SNAP_WIDTH, SNAPS_PER_HOUR, HOUR_WIDTH } from './constants'
 import type { EventRow } from '../../types'
@@ -22,7 +22,7 @@ function cascadeClass(cascade: CascadeResult): string {
 }
 
 export default function SnapGrid({ day, row }: Props) {
-  const { templates, events, dragSource, tryPlace, endDrag } = useTimetableContext()
+  const { templates, events, dragSource, tryPlace, endDrag, setGuides } = useTimetableContext()
   const [hoveredCell, setHoveredCell] = useState<number | null>(null)
   const [isShaking, setIsShaking] = useState(false)
 
@@ -40,6 +40,28 @@ export default function SnapGrid({ day, row }: Props) {
     setIsShaking(true)
     setTimeout(() => setIsShaking(false), 400)
   }, [])
+
+  useEffect(() => {
+    if (!dragSource) return
+
+    let startTime: number
+    let duration: number
+
+    if (draggingTemplate && !draggingTemplate.flexible) {
+      startTime = draggingTemplate.startTime
+      duration = draggingTemplate.duration
+    } else if (draggingTemplate?.flexible && hoveredCell !== null) {
+      startTime = hoveredCell / SNAPS_PER_HOUR
+      duration = draggingTemplate.duration
+    } else if (draggingEvent && hoveredCell !== null) {
+      startTime = hoveredCell / SNAPS_PER_HOUR
+      duration = draggingEvent.duration
+    } else {
+      return
+    }
+
+    setGuides({ startTime, endTime: startTime + duration, mode: 'drag' })
+  }, [dragSource, draggingTemplate, draggingEvent, hoveredCell, setGuides])
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     setHoveredCell(xToCell(e.clientX, e.currentTarget))

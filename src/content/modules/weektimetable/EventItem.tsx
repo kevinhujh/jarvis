@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useMemo } from 'react'
+import { useState, useRef, useCallback, useMemo, useEffect } from 'react'
 import clsx from 'clsx'
 import { HOUR_WIDTH, SNAPS_PER_HOUR, MIN_EVENT_DURATION_MINUTES, TOTAL_HOURS } from './constants'
 import type { CalendarEvent } from '../../types'
@@ -15,8 +15,9 @@ type Props = {
 }
 
 export default function EventItem({ event, scrollLeft }: Props) {
-  const { dragSource, startDrag, endDrag, tryResize } = useTimetableContext()
+  const { dragSource, startDrag, endDrag, tryResize, setGuides } = useTimetableContext()
   const [previewDuration, setPreviewDuration] = useState<number | null>(null)
+  const [isHovered, setIsHovered] = useState(false)
   const startRef = useRef<{ x: number; duration: number } | null>(null)
 
   const effectiveDuration = previewDuration ?? event.duration
@@ -26,6 +27,16 @@ export default function EventItem({ event, scrollLeft }: Props) {
   const left = event.startTime * HOUR_WIDTH
   const brickWidth = effectiveDuration * HOUR_WIDTH
   const isResizing = previewDuration !== null
+
+  useEffect(() => {
+    if (dragSource !== null) return
+    if (!isHovered) return
+    setGuides({
+      startTime: event.startTime,
+      endTime: event.startTime + effectiveDuration,
+      mode: isResizing ? 'drag' : 'hover',
+    })
+  }, [isHovered, isResizing, dragSource, event.startTime, effectiveDuration, setGuides])
 
   const handleResizePointerDown = useCallback(
     (e: React.PointerEvent<HTMLDivElement>) => {
@@ -99,6 +110,11 @@ export default function EventItem({ event, scrollLeft }: Props) {
           : undefined
       }
       onDragEnd={event.flexible ? endDrag : undefined}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => {
+        setIsHovered(false)
+        if (dragSource === null) setGuides(null)
+      }}
       className={clsx(
         'group absolute inset-y-0 flex flex-col py-1 gap-1 hover:z-20',
         event.flexible && !isResizing && 'cursor-grab active:cursor-grabbing',

@@ -1,9 +1,7 @@
 import type { CalendarEvent, EventCategory, EventRow } from '../../types'
 import { CATEGORY_COLOR } from './categoryColors'
 
-export type CascadeResult =
-  | { success: true; moves: Map<string, number> }
-  | { success: false }
+export type CascadeResult = { success: true; moves: Map<string, number> } | { success: false }
 
 // Computes the push cascade for placing an event at [incomingStart, incomingEnd].
 // Direction is inferred from each existing event's position relative to the
@@ -19,9 +17,7 @@ export function computeCascade(
   incomingDuration: number,
   excludeId?: string
 ): CascadeResult {
-  const rowEvents = events.filter(
-    (e) => e.day === day && e.row === row && e.id !== excludeId
-  )
+  const rowEvents = events.filter((e) => e.day === day && e.row === row && e.id !== excludeId)
 
   const incomingEnd = incomingStart + incomingDuration
   const moves = new Map<string, number>()
@@ -77,7 +73,7 @@ export function spawnDragGhost(options: {
   el.style.left = '-9999px'
   el.style.width = '232px'
   el.style.pointerEvents = 'none'
-  el.className = `flex items-center justify-between px-3 py-2.5 rounded-md text-white text-small font-medium ${CATEGORY_COLOR[options.category]}`
+  el.className = `flex items-center justify-between px-2 py-2 rounded-md text-white text-small font-medium ${CATEGORY_COLOR[options.category]}`
 
   const inner = document.createElement('div')
   inner.className = 'flex flex-col min-w-0'

@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef } from 'react'
 import type { ReactNode } from 'react'
 import { TimetableContext } from './context'
-import type { DragSource } from './context'
+import type { DragSource, GuideState } from './context'
 import type { CalendarEvent, EventRow } from '../../types'
 import { mockEvents } from '../../modules/weektimetable/mockData'
 import { mockTemplates } from '../../modules/weektimetable/mockTemplates'
@@ -14,6 +14,7 @@ export default function TimetableProvider({ children }: Props) {
   const [selectedDayChart, setSelectedDayChart] = useState('day-allocation')
   const [events, setEvents] = useState<CalendarEvent[]>(mockEvents)
   const [dragSource, setDragSource] = useState<DragSource | null>(null)
+  const [guides, setGuides] = useState<GuideState | null>(null)
   const templates = mockTemplates
 
   // Ref keeps tryPlace reading fresh event state without listing events as a dep
@@ -37,6 +38,7 @@ export default function TimetableProvider({ children }: Props) {
 
   const endDrag = useCallback(() => {
     setDragSource(null)
+    setGuides(null)
   }, [])
 
   const tryPlace = useCallback(
@@ -143,6 +145,8 @@ export default function TimetableProvider({ children }: Props) {
         endDrag,
         scrollToTime,
         registerScrollToTime,
+        guides,
+        setGuides,
       }}
     >
       {children}

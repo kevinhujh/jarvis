@@ -32,10 +32,11 @@ export default function TopBar({ isDark, onToggleTheme }: Props) {
           onClick={onToggleTheme}
           sx={{ color: 'var(--color-content-secondary)' }}
         >
-          {isDark
-            ? <LightModeIcon sx={{ fontSize: 20 }} />
-            : <DarkModeIcon sx={{ fontSize: 20 }} />
-          }
+          {isDark ? (
+            <LightModeIcon sx={{ fontSize: 20 }} />
+          ) : (
+            <DarkModeIcon sx={{ fontSize: 20 }} />
+          )}
         </IconButton>
 
         <Popover
