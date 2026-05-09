@@ -61,6 +61,38 @@ export default function WeekTimetable() {
     setScrollLeft(left)
   }, [])
 
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el) return
+    let target = 0
+    let rafId: number | null = null
+
+    const animate = () => {
+      const dist = target - el.scrollLeft
+      if (Math.abs(dist) < 0.5) {
+        el.scrollLeft = target
+        rafId = null
+        return
+      }
+      el.scrollLeft += dist * 0.15
+      rafId = requestAnimationFrame(animate)
+    }
+
+    const handleWheel = (e: WheelEvent) => {
+      if (e.deltaX !== 0) return
+      e.preventDefault()
+      if (rafId === null) target = el.scrollLeft
+      target = Math.max(0, Math.min(el.scrollWidth - el.clientWidth, target + e.deltaY))
+      if (rafId === null) rafId = requestAnimationFrame(animate)
+    }
+
+    el.addEventListener('wheel', handleWheel, { passive: false })
+    return () => {
+      el.removeEventListener('wheel', handleWheel)
+      if (rafId !== null) cancelAnimationFrame(rafId)
+    }
+  }, [])
+
   return (
     <div data-testid="week-timetable" className="flex w-full bg-background-primary gap-4 p-2">
       <DayLabelColumn
