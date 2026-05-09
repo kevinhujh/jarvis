@@ -7,10 +7,11 @@ To understand current progress, compare this plan against the actual state of th
 
 ## App Layout
 
-Two top-level regions:
+Three top-level regions:
 
-- **Sidebar** (left) — main navigation menu. Used to switch between different views and panels.
-- **Content** (right, majority of viewport) — hosts whatever view or panel is currently active.
+- **TopBar** (top strip) — global tools accessible from any view: theme toggle, calendar popover, and future global actions.
+- **Sidebar** (left, collapsible) — main navigation; switches between views; collapses to icon-only width to preserve horizontal space for time-based content. Not yet implemented.
+- **Content** (remainder) — hosts the active view.
 
 ---
 

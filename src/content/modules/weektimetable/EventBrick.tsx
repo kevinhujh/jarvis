@@ -1,14 +1,9 @@
 import { SHORT_THRESHOLD } from './constants'
 import type { CalendarEvent } from '../../types'
+import { formatHour } from '../../utils/time'
 
-interface Props {
+type Props = {
   event: CalendarEvent
-}
-
-function formatHour(hour: number): string {
-  const h = Math.floor(hour)
-  const m = Math.round((hour - h) * 60)
-  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`
 }
 
 export default function EventBrick({ event }: Props) {

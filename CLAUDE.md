@@ -56,4 +56,8 @@ Entry: `index.html` → `src/main.tsx` → `src/App.tsx` → `src/Workspace.tsx`
 - `XXXProvider.tsx` — owns state and effects, wraps children with the context value
 - `useXXXContext.ts` — exports the consumer hook; throws if called outside the provider
 
-**TypeScript** is configured in bundler mode with strict unused-variable checking (`noUnusedLocals`, `noUnusedParameters`). `erasableSyntaxOnly` is enabled — avoid TypeScript-only syntax that emits runtime code (e.g. `enum`, parameter properties).
+**Components** — `src/content/components/` holds reusable wrappers around MUI components. Inside a wrapper, import the MUI component under an alias (e.g. `Popover as MUIPopover`) to avoid a namespace clash with the wrapper's own export name.
+
+**Utilities** — `src/content/utils/` holds pure functions with no React dependencies, organized by concern (e.g. `time.ts` for date and time helpers). Module-specific constants stay co-located (e.g. `weektimetable/constants.ts`).
+
+**TypeScript** is configured in bundler mode with strict unused-variable checking (`noUnusedLocals`, `noUnusedParameters`). `erasableSyntaxOnly` is enabled — avoid TypeScript-only syntax that emits runtime code (e.g. `enum`, parameter properties). Prefer `type` over `interface` for all type definitions.

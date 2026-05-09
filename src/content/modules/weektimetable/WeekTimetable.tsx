@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect, useCallback } from 'react'
 import { HOUR_WIDTH, TRACK_WIDTH } from './constants'
-import { getWeekStart } from './utils'
+import { getWeekStart } from '../../utils/time'
 import { mockEvents } from './mockData'
 import { useDateContext } from '../../contexts/date/useDateContext'
 import TimeAxisHeader from './TimeAxisHeader'

@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import type { ReactNode } from 'react'
 import { DateContext } from './context'
-import { getWeekStart } from '../../modules/weektimetable/utils'
+import { getWeekStart } from '../../utils/time'
 
-interface Props {
+type Props = {
   children: ReactNode
 }
 

@@ -4,7 +4,7 @@ import type { CalendarEvent } from '../../types'
 import EventBrick from './EventBrick'
 import EventLabel from './EventLabel'
 
-interface Props {
+type Props = {
   variant: 'primary' | 'secondary'
   events: CalendarEvent[]
   scrollLeft: number
@@ -15,7 +15,7 @@ export default function EventRow({ variant, events, scrollLeft }: Props) {
     <div
       data-testid={`event-row-${variant}`}
       className={clsx(
-        'relative h-20',
+        'relative h-16',
         variant === 'primary' ? 'bg-surface-primary' : 'bg-surface-secondary/30'
       )}
     >
@@ -26,7 +26,7 @@ export default function EventRow({ variant, events, scrollLeft }: Props) {
         return (
           <div
             key={event.id}
-            className="absolute inset-y-0 flex flex-col py-2 gap-2"
+            className="absolute inset-y-0 flex flex-col py-1 gap-1"
             style={{ left, width: Math.max(brickWidth, 4) }}
           >
             <EventLabel event={event} scrollLeft={scrollLeft} />
