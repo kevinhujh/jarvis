@@ -47,6 +47,8 @@ WeekTimetable                         flex row, full height
         └── EventLibrary              vertical list of template cards
 ```
 
+`TimeAxisHeader` lives inside the same `overflow-x-auto` scroll container as the `DayRow`s — this is what keeps them in sync without any manual transform or ref forwarding.
+
 Each `DayRow` has a **primary** and **secondary** event row. Primary sits on top — vertical position naturally communicates priority without needing extra labels or color coding. The `primaryEventRow` and `secondaryEventRow` are consts within `DayRow`, both rendering the shared `EventRow` component.
 
 ### EventRow internals

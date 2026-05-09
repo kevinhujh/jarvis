@@ -12,14 +12,9 @@ import EventLibrary from './EventLibrary'
 import { WeekDensityPanel, DayDensityPanel } from './activityPanels'
 import clsx from 'clsx'
 
-function applyTimeAxisScroll(el: HTMLDivElement | null, left: number) {
-  if (el) el.style.transform = `translateX(-${left}px)`
-}
-
 export default function WeekTimetable() {
   const { selectedWeekStart: weekStart } = useDateContext()
   const scrollRef = useRef<HTMLDivElement>(null)
-  const timeAxisRef = useRef<HTMLDivElement>(null)
   const [scrollLeft, setScrollLeft] = useState(0)
   const [isLibraryOpen, setIsLibraryOpen] = useState(false)
 
@@ -56,15 +51,12 @@ export default function WeekTimetable() {
     if (todayEvents.length > 0 && scrollRef.current) {
       const target = Math.max(0, todayEvents[0].startHour * HOUR_WIDTH - 40)
       scrollRef.current.scrollLeft = target
-      applyTimeAxisScroll(timeAxisRef.current, target)
       setScrollLeft(target)
     }
   }, [weekStart, todayDayIndex, isCurrentWeek])
 
   const handleScroll = useCallback(() => {
-    const left = scrollRef.current?.scrollLeft ?? 0
-    applyTimeAxisScroll(timeAxisRef.current, left)
-    setScrollLeft(left)
+    setScrollLeft(scrollRef.current?.scrollLeft ?? 0)
   }, [])
 
   useEffect(() => {
@@ -126,11 +118,9 @@ export default function WeekTimetable() {
           />
 
           <div className="flex-1 flex flex-col min-w-0 rounded-md ring ring-border-primary bg-surface-primary">
-            <div className="overflow-hidden shrink-0 border-b border-border-primary">
-              <TimeAxisHeader ref={timeAxisRef} />
-            </div>
             <div ref={scrollRef} onScroll={handleScroll} className="flex-1 min-w-0 overflow-x-auto">
               <div style={{ width: TRACK_WIDTH }}>
+                <TimeAxisHeader />
                 {days.map((_, i) => (
                   <DayRow
                     key={i}
