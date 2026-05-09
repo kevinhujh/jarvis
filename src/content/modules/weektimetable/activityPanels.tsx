@@ -2,7 +2,10 @@ import type { ReactNode } from 'react'
 import type { CalendarEvent } from '../../types'
 import { TOTAL_HOURS } from './constants'
 import { useTimetableContext } from '../../contexts/timetable/useTimetableContext'
+import { useDateContext } from '../../contexts/date/useDateContext'
 import clsx from 'clsx'
+
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
 type ChartTab = { id: string; label: string }
 
@@ -19,7 +22,9 @@ function computeDayAllocation(events: CalendarEvent[], dayIndex: number): HourSl
     for (let slot = 0; slot < SLOTS_PER_HOUR; slot++) {
       const slotStart = hour + slot / SLOTS_PER_HOUR
       const slotEnd = slotStart + 1 / SLOTS_PER_HOUR
-      if (events.some((e) => e.day === dayIndex && e.startHour < slotEnd && e.endHour > slotStart)) {
+      if (
+        events.some((e) => e.day === dayIndex && e.startHour < slotEnd && e.endHour > slotStart)
+      ) {
         allocatedSlots++
       }
     }
@@ -86,18 +91,27 @@ function PanelHeader({
   charts,
   selectedId,
   onSelect,
+  chip,
 }: {
   label: string
   charts: ChartTab[]
   selectedId: string
   onSelect: (id: string) => void
+  chip?: string
 }) {
   return (
     <div className="flex items-center justify-between shrink-0 mb-1">
-      <span className="text-tiny text-content-secondary uppercase tracking-widest">
-        {label}
-        {charts.length === 1 && ` · ${charts[0].label}`}
-      </span>
+      <div className="flex items-center gap-1.5">
+        <span className="text-mini text-content-secondary uppercase tracking-widest">
+          {label}
+          {charts.length === 1 && ` · ${charts[0].label}`}
+        </span>
+        {chip && (
+          <span className="bg-brand-primary text-white rounded px-1.5 py-0.5 text-mini leading-none">
+            {chip}
+          </span>
+        )}
+      </div>
       {charts.length > 1 && (
         <div className="flex gap-0.5">
           {charts.map((tab) => (
@@ -193,6 +207,14 @@ type DayPanelProps = { events: CalendarEvent[]; focusedDay: number | null }
 
 export function DayDensityPanel({ events, focusedDay }: DayPanelProps) {
   const { selectedDayChart, setSelectedDayChart } = useTimetableContext()
+  const { selectedWeekStart } = useDateContext()
+
+  const focusedDate = focusedDay !== null
+    ? new Date(selectedWeekStart.getFullYear(), selectedWeekStart.getMonth(), selectedWeekStart.getDate() + focusedDay)
+    : null
+  const chip = focusedDate
+    ? `${MONTHS[focusedDate.getMonth()]} ${focusedDate.getDate()}`
+    : undefined
 
   return (
     <div className="h-full flex flex-col">
@@ -201,6 +223,7 @@ export function DayDensityPanel({ events, focusedDay }: DayPanelProps) {
         charts={dayCharts}
         selectedId={selectedDayChart}
         onSelect={setSelectedDayChart}
+        chip={chip}
       />
       {focusedDay !== null ? (
         <DayAllocationChart events={events} dayIndex={focusedDay} />
