@@ -125,7 +125,7 @@ type CalendarEvent = {
 
 ### Drag and drop
 
-Six incremental steps; only step 6 remains:
+Six incremental steps:
 
 1. **Data model** — migrate `mockEvents` to `startHour + duration` shape; add `flexible` flag; remove `endHour` from storage
 2. **Drop zones + snapping grid** — overlay invisible 5-minute snap cells across each `EventRow`; show hover highlight on valid drop targets; no actual placement yet

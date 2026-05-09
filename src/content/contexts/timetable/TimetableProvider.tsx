@@ -103,6 +103,32 @@ export default function TimetableProvider({ children }: Props) {
     [templates]
   )
 
+  const tryResize = useCallback((eventId: string, newDuration: number): boolean => {
+    const target = eventsRef.current.find((e) => e.id === eventId)
+    if (!target) return false
+    if (newDuration <= 0) return false
+
+    const cascade = computeCascade(
+      eventsRef.current,
+      target.day,
+      target.row,
+      target.startTime,
+      newDuration,
+      eventId
+    )
+    if (!cascade.success) return false
+
+    setEvents((prev) =>
+      prev.map((e) => {
+        if (e.id === eventId) return { ...e, duration: newDuration }
+        if (cascade.moves.has(e.id)) return { ...e, startTime: cascade.moves.get(e.id)! }
+        return e
+      })
+    )
+
+    return true
+  }, [])
+
   return (
     <TimetableContext.Provider
       value={{
@@ -111,6 +137,7 @@ export default function TimetableProvider({ children }: Props) {
         events,
         templates,
         tryPlace,
+        tryResize,
         dragSource,
         startDrag,
         endDrag,

@@ -13,6 +13,7 @@ export type TimetableContextProps = {
   events: CalendarEvent[]
   templates: EventTemplate[]
   tryPlace: (source: DragSource, day: number, row: EventRow, startTime: number) => boolean
+  tryResize: (eventId: string, newDuration: number) => boolean
   dragSource: DragSource | null
   startDrag: (source: DragSource) => void
   endDrag: () => void

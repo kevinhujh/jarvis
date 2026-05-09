@@ -5,11 +5,18 @@ import { CATEGORY_COLOR } from './categoryColors'
 import type { CalendarEvent } from '../../types'
 import { formatHour } from '../../utils/time'
 
-type Props = {
-  event: CalendarEvent
+type ResizeHandlers = {
+  onPointerDown: (e: React.PointerEvent<HTMLDivElement>) => void
+  onPointerMove: (e: React.PointerEvent<HTMLDivElement>) => void
+  onPointerUp: (e: React.PointerEvent<HTMLDivElement>) => void
 }
 
-export default function EventBrick({ event }: Props) {
+type Props = {
+  event: CalendarEvent
+  resizeHandlers?: ResizeHandlers
+}
+
+export default function EventBrick({ event, resizeHandlers }: Props) {
   const isShort = event.duration < SHORT_THRESHOLD
 
   return (
@@ -29,6 +36,19 @@ export default function EventBrick({ event }: Props) {
         <LockIcon
           sx={{ fontSize: 10, color: 'white', opacity: 0.7 }}
           className="absolute top-0.5 right-0.5"
+        />
+      )}
+      {resizeHandlers && (
+        <div
+          data-testid={`event-resize-handle-${event.id}`}
+          className="absolute right-0 inset-y-0 w-1.5 cursor-ew-resize"
+          onPointerDown={resizeHandlers.onPointerDown}
+          onPointerMove={resizeHandlers.onPointerMove}
+          onPointerUp={resizeHandlers.onPointerUp}
+          onMouseDown={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+          }}
         />
       )}
     </div>
