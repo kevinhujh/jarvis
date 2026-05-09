@@ -50,4 +50,10 @@ Entry: `index.html` → `src/main.tsx` → `src/App.tsx` → `src/Workspace.tsx`
 
 **CSS approach** — global design tokens live as CSS custom properties in `:root` inside `src/index.css` (colors, typography, shadows). Component-scoped styles live in co-located `.css` files (e.g. `App.css`). Use Tailwind utilities for layout and spacing; reach for MUI components for interactive UI elements; use `clsx` to compose conditional class names.
 
+**Context pattern** — shared state lives in `src/content/contexts/`, one subdirectory per context named without the "Context" suffix (e.g. `date/`). Each subdirectory contains exactly three files:
+
+- `context.ts` — exports `type XXXContextProps` and the `createContext` const
+- `XXXProvider.tsx` — owns state and effects, wraps children with the context value
+- `useXXXContext.ts` — exports the consumer hook; throws if called outside the provider
+
 **TypeScript** is configured in bundler mode with strict unused-variable checking (`noUnusedLocals`, `noUnusedParameters`). `erasableSyntaxOnly` is enabled — avoid TypeScript-only syntax that emits runtime code (e.g. `enum`, parameter properties).

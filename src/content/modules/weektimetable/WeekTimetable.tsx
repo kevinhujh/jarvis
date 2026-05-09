@@ -1,36 +1,35 @@
 import { useRef, useState, useEffect, useCallback } from 'react'
 import { HOUR_WIDTH, TRACK_WIDTH } from './constants'
+import { getWeekStart } from './utils'
 import { mockEvents } from './mockData'
+import { useDateContext } from '../../contexts/date/useDateContext'
 import TimeAxisHeader from './TimeAxisHeader'
 import DayLabelColumn from './DayLabelColumn'
 import DayRow from './DayRow'
-
-function getWeekStart(date: Date): Date {
-  const d = new Date(date)
-  const day = d.getDay()
-  const diff = day === 0 ? -6 : 1 - day
-  d.setDate(d.getDate() + diff)
-  d.setHours(0, 0, 0, 0)
-  return d
-}
 
 function applyTimeAxisScroll(el: HTMLDivElement | null, left: number) {
   if (el) el.style.transform = `translateX(-${left}px)`
 }
 
 export default function WeekTimetable() {
+  const { selectedWeekStart: weekStart } = useDateContext()
   const scrollRef = useRef<HTMLDivElement>(null)
   const timeAxisRef = useRef<HTMLDivElement>(null)
   const [scrollLeft, setScrollLeft] = useState(0)
 
   const today = new Date()
-  const weekStart = getWeekStart(today)
   const todayDayIndex = (() => {
     const d = today.getDay()
     return d === 0 ? 6 : d - 1
   })()
+  const isCurrentWeek = weekStart.getTime() === getWeekStart(today).getTime()
 
-  const [focusedDay, setFocusedDay] = useState<number | null>(todayDayIndex)
+  const [focusedDay, setFocusedDay] = useState<number | null>(isCurrentWeek ? todayDayIndex : null)
+
+  useEffect(() => {
+    const nowIsCurrentWeek = weekStart.getTime() === getWeekStart(new Date()).getTime()
+    setFocusedDay(nowIsCurrentWeek ? todayDayIndex : null)
+  }, [weekStart, todayDayIndex])
 
   const handleDayClick = useCallback((i: number) => {
     setFocusedDay((prev) => (prev === i ? null : i))
@@ -43,6 +42,7 @@ export default function WeekTimetable() {
   })
 
   useEffect(() => {
+    if (!isCurrentWeek) return
     const todayEvents = mockEvents
       .filter((e) => e.day === todayDayIndex)
       .sort((a, b) => a.startHour - b.startHour)
@@ -53,7 +53,7 @@ export default function WeekTimetable() {
       applyTimeAxisScroll(timeAxisRef.current, target)
       setScrollLeft(target)
     }
-  }, [todayDayIndex])
+  }, [weekStart, todayDayIndex, isCurrentWeek])
 
   const handleScroll = useCallback(() => {
     const left = scrollRef.current?.scrollLeft ?? 0
@@ -62,10 +62,10 @@ export default function WeekTimetable() {
   }, [])
 
   return (
-    <div data-testid="week-timetable" className="flex w-full bg-background-primary gap-4 p-4">
+    <div data-testid="week-timetable" className="flex w-full bg-background-primary gap-4 p-2">
       <DayLabelColumn
         days={days}
-        todayDayIndex={todayDayIndex}
+        todayDayIndex={isCurrentWeek ? todayDayIndex : -1}
         focusedDay={focusedDay}
         onDayClick={handleDayClick}
       />
