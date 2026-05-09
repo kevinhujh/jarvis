@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect, useCallback } from 'react'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
-import { HOUR_WIDTH, TRACK_WIDTH } from './constants'
+import { HOUR_WIDTH, TRACK_WIDTH, SUMMARY_MIN_HEIGHT } from './constants'
 import { getWeekStart } from '../../utils/time'
 import { mockEvents } from './mockData'
 import { useDateContext } from '../../contexts/date/useDateContext'
@@ -98,7 +98,8 @@ export default function WeekTimetable() {
         {/* Summary card */}
         <div
           data-testid="week-timetable-summary"
-          className="shrink-0 h-[200px] rounded-md ring ring-border-primary bg-surface-primary flex flex-col"
+          style={{ minHeight: SUMMARY_MIN_HEIGHT }}
+          className="shrink-0 rounded-md ring ring-border-primary bg-surface-primary flex flex-col"
         >
           <div className="flex-1 min-h-0 p-3 border-b border-border-primary">
             <WeekDensityPanel events={mockEvents} />

@@ -60,6 +60,8 @@ Entry: `index.html` → `src/main.tsx` → `src/App.tsx` → `src/Workspace.tsx`
 
 **Utilities** — `src/content/utils/` holds pure functions with no React dependencies, organized by concern (e.g. `time.ts` for date and time helpers). Module-specific constants stay co-located (e.g. `weektimetable/constants.ts`).
 
+**Layout constants** — pixel-precise alignment between sibling components (e.g. `DayLabelColumn` cell heights matching `DayRow` heights) is enforced via shared JS constants in a co-located `constants.ts`, applied through inline `style={}` props. Avoid encoding these values in Tailwind classes — Tailwind arbitrary values cannot be referenced across files. One constant is the source of truth; others are derived from it (e.g. `DAY_ROW_HEIGHT = EVENT_ROW_HEIGHT * ROWS_PER_DAY`).
+
 **Multi-export modules** — when a file has no single dominant export, use a lowercase filename (e.g. `activityPanels.tsx`). All exports are named; there is no default. Use this pattern sparingly — only when the exports are tightly coupled and belong together conceptually.
 
 **Extensible slot pattern** — chart slots (and similar extensible UI slots) are registered as `type ChartTab = { id: string; label: string }`. The `id` drives context state and conditional rendering; the `label` drives the segmented control UI. Adding a new chart means appending to the tab array — no structural changes required.

@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { HOUR_WIDTH } from './constants'
+import { HOUR_WIDTH, EVENT_ROW_HEIGHT } from './constants'
 import type { CalendarEvent } from '../../types'
 import EventBrick from './EventBrick'
 import EventLabel from './EventLabel'
@@ -14,8 +14,9 @@ export default function EventRow({ variant, events, scrollLeft }: Props) {
   return (
     <div
       data-testid={`event-row-${variant}`}
+      style={{ height: EVENT_ROW_HEIGHT }}
       className={clsx(
-        'relative h-16',
+        'relative',
         variant === 'primary' ? 'bg-surface-primary' : 'bg-surface-secondary/30'
       )}
     >

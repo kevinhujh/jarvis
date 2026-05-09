@@ -79,7 +79,7 @@
   :root {
     --hour-width: 160px;
     --scrollbar-size: 8px;
-    --time-axis-height: 26px;
+    --time-axis-height: 28px;
     font-family: 'Montserrat', system-ui, sans-serif;
     font-size: 16px;
     line-height: 1.5;
