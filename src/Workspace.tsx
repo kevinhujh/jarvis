@@ -3,6 +3,7 @@ import { Button } from '@mui/material'
 import TestGround from './content/TestGround'
 import WeekTimetable from './content/modules/weektimetable/WeekTimetable'
 import DateProvider from './content/contexts/date/DateProvider'
+import TimetableProvider from './content/contexts/timetable/TimetableProvider'
 import TopBar from './content/modules/TopBar'
 
 type View = 'landing' | 'app' | 'testground'
@@ -22,6 +23,7 @@ export default function Workspace() {
   if (view === 'app') {
     return (
       <DateProvider>
+      <TimetableProvider>
         <div id="workspace" className={isDark ? 'dark' : ''}>
           <div className="h-screen flex flex-col bg-background-primary text-content-primary">
             <TopBar isDark={isDark} onToggleTheme={() => setIsDark((d) => !d)} />
@@ -32,6 +34,7 @@ export default function Workspace() {
             </div>
           </div>
         </div>
+      </TimetableProvider>
       </DateProvider>
     )
   }

@@ -26,14 +26,25 @@ Traditional vertical timetables have two pain points:
 1. **Cross-day comparison** — hard to see at a glance how events distribute across the 24 hours of different days. Horizontal layout puts days as rows so you can scan vertically across them.
 2. **Soft multitasking** — vertical timetables assume one event per time slot. Modern work is fragmented; people are accountable for overlapping things without being fully present in both. Rather than allowing infinite overlap, we loosen the restriction by exactly one step: two event rows per day.
 
-### Component hierarchy
+### Layout
 
 ```
-WeekTimetable
-  ├── TimeAxisHeader
-  └── DayRow (×7)
-        ├── primaryEventRow   → <EventRow variant="primary" />
-        └── secondaryEventRow → <EventRow variant="secondary" />
+WeekTimetable                         flex row, full height
+  ├── Main column                     flex col, flex-1, min-w-0
+  │     ├── Summary card              shrink-0, minHeight=SUMMARY_MIN_HEIGHT
+  │     │     ├── Upper half          WeekDensityPanel (flex-1)
+  │     │     └── Lower half          DayDensityPanel  (flex-1)
+  │     └── Timetable row             flex row, flex-1
+  │           ├── DayLabelColumn      shrink-0, w-30
+  │           └── Grid container      flex col, flex-1, rounded card
+  │                 └── scroll area   overflow-x-auto
+  │                       ├── TimeAxisHeader
+  │                       └── DayRow (×7)
+  │                             ├── primaryEventRow   → <EventRow variant="primary" />
+  │                             └── secondaryEventRow → <EventRow variant="secondary" />
+  ├── Library pull tab                shrink-0, w-10, toggles drawer
+  └── Library drawer                  w-[260px] | w-0, animated transition
+        └── EventLibrary              vertical list of template cards
 ```
 
 Each `DayRow` has a **primary** and **secondary** event row. Primary sits on top — vertical position naturally communicates priority without needing extra labels or color coding. The `primaryEventRow` and `secondaryEventRow` are consts within `DayRow`, both rendering the shared `EventRow` component.

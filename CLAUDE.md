@@ -60,4 +60,8 @@ Entry: `index.html` → `src/main.tsx` → `src/App.tsx` → `src/Workspace.tsx`
 
 **Utilities** — `src/content/utils/` holds pure functions with no React dependencies, organized by concern (e.g. `time.ts` for date and time helpers). Module-specific constants stay co-located (e.g. `weektimetable/constants.ts`).
 
+**Multi-export modules** — when a file has no single dominant export, use a lowercase filename (e.g. `activityPanels.tsx`). All exports are named; there is no default. Use this pattern sparingly — only when the exports are tightly coupled and belong together conceptually.
+
+**Extensible slot pattern** — chart slots (and similar extensible UI slots) are registered as `type ChartTab = { id: string; label: string }`. The `id` drives context state and conditional rendering; the `label` drives the segmented control UI. Adding a new chart means appending to the tab array — no structural changes required.
+
 **TypeScript** is configured in bundler mode with strict unused-variable checking (`noUnusedLocals`, `noUnusedParameters`). `erasableSyntaxOnly` is enabled — avoid TypeScript-only syntax that emits runtime code (e.g. `enum`, parameter properties). Prefer `type` over `interface` for all type definitions.
