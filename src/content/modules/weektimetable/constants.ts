@@ -13,3 +13,5 @@ export const SUMMARY_MIN_HEIGHT = 200        // px, minimum height of the top su
 export const SHORT_THRESHOLD = 1.0
 export const MAX_EVENT_TEMPLATES = 100
 export const MIN_EVENT_DURATION_MINUTES = 5
+export const SNAPS_PER_HOUR = 60 / MIN_EVENT_DURATION_MINUTES  // 12
+export const SNAP_WIDTH = HOUR_WIDTH / SNAPS_PER_HOUR           // px per 5-min cell

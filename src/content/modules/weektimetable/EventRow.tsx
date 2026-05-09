@@ -3,6 +3,7 @@ import { HOUR_WIDTH, EVENT_ROW_HEIGHT } from './constants'
 import type { CalendarEvent } from '../../types'
 import EventBrick from './EventBrick'
 import EventLabel from './EventLabel'
+import SnapGrid from './SnapGrid'
 
 type Props = {
   variant: 'primary' | 'secondary'
@@ -20,6 +21,7 @@ export default function EventRow({ variant, events, scrollLeft }: Props) {
         variant === 'primary' ? 'bg-surface-primary' : 'bg-surface-secondary/30'
       )}
     >
+      <SnapGrid />
       {events.map((event) => {
         const left = event.startTime * HOUR_WIDTH
         const brickWidth = event.duration * HOUR_WIDTH
