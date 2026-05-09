@@ -3,8 +3,8 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import { HOUR_WIDTH, TRACK_WIDTH, SUMMARY_MIN_HEIGHT } from './constants'
 import { getWeekStart } from '../../utils/time'
-import { mockEvents } from './mockData'
 import { useDateContext } from '../../contexts/date/useDateContext'
+import { useTimetableContext } from '../../contexts/timetable/useTimetableContext'
 import TimeAxisHeader from './TimeAxisHeader'
 import DayLabelColumn from './DayLabelColumn'
 import DayRow from './DayRow'
@@ -14,6 +14,7 @@ import clsx from 'clsx'
 
 export default function WeekTimetable() {
   const { selectedWeekStart: weekStart } = useDateContext()
+  const { events, registerScrollToTime } = useTimetableContext()
   const scrollRef = useRef<HTMLDivElement>(null)
   const [scrollLeft, setScrollLeft] = useState(0)
   const [isLibraryOpen, setIsLibraryOpen] = useState(false)
@@ -32,6 +33,18 @@ export default function WeekTimetable() {
     setFocusedDay(nowIsCurrentWeek ? todayDayIndex : null)
   }, [weekStart, todayDayIndex])
 
+  useEffect(() => {
+    registerScrollToTime((time: number) => {
+      if (!scrollRef.current) return
+      const el = scrollRef.current
+      const target = Math.max(0, Math.min(
+        time * HOUR_WIDTH - el.clientWidth / 2,
+        el.scrollWidth - el.clientWidth
+      ))
+      el.scrollTo({ left: target, behavior: 'smooth' })
+    })
+  }, [registerScrollToTime])
+
   const handleDayClick = useCallback((i: number) => {
     setFocusedDay((prev) => (prev === i ? null : i))
   }, [])
@@ -44,7 +57,7 @@ export default function WeekTimetable() {
 
   useEffect(() => {
     if (!isCurrentWeek) return
-    const todayEvents = mockEvents
+    const todayEvents = events
       .filter((e) => e.day === todayDayIndex)
       .sort((a, b) => a.startTime - b.startTime)
 
@@ -102,10 +115,10 @@ export default function WeekTimetable() {
           className="shrink-0 rounded-md ring ring-border-primary bg-surface-primary flex flex-col"
         >
           <div className="flex-1 min-h-0 p-3 border-b border-border-primary">
-            <WeekDensityPanel events={mockEvents} />
+            <WeekDensityPanel events={events} />
           </div>
           <div className="flex-1 min-h-0 p-3">
-            <DayDensityPanel events={mockEvents} focusedDay={focusedDay} />
+            <DayDensityPanel events={events} focusedDay={focusedDay} />
           </div>
         </div>
 
@@ -127,7 +140,7 @@ export default function WeekTimetable() {
                     key={i}
                     dayIndex={i}
                     focused={focusedDay === null || focusedDay === i}
-                    events={mockEvents.filter((e) => e.day === i)}
+                    events={events.filter((e) => e.day === i)}
                     scrollLeft={scrollLeft}
                   />
                 ))}

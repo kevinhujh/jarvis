@@ -14,10 +14,10 @@ export default function DayRow({ dayIndex, focused, events, scrollLeft }: Props)
   const secondaryEvents = events.filter((e) => e.row === 'secondary')
 
   const primaryEventRow = (
-    <EventRow variant="primary" events={primaryEvents} scrollLeft={scrollLeft} />
+    <EventRow variant="primary" day={dayIndex} events={primaryEvents} scrollLeft={scrollLeft} />
   )
   const secondaryEventRow = (
-    <EventRow variant="secondary" events={secondaryEvents} scrollLeft={scrollLeft} />
+    <EventRow variant="secondary" day={dayIndex} events={secondaryEvents} scrollLeft={scrollLeft} />
   )
 
   return (

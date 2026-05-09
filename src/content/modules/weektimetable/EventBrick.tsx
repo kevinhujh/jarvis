@@ -1,4 +1,7 @@
+import clsx from 'clsx'
+import LockIcon from '@mui/icons-material/Lock'
 import { SHORT_THRESHOLD } from './constants'
+import { CATEGORY_COLOR } from './categoryColors'
 import type { CalendarEvent } from '../../types'
 import { formatHour } from '../../utils/time'
 
@@ -10,11 +13,23 @@ export default function EventBrick({ event }: Props) {
   const isShort = event.duration < SHORT_THRESHOLD
 
   return (
-    <div data-testid={`event-brick-${event.id}`} className="flex-1 w-full flex items-center rounded-md bg-brand-primary p-1 overflow-hidden">
+    <div
+      data-testid={`event-brick-${event.id}`}
+      className={clsx(
+        'relative flex-1 w-full flex items-center rounded-md p-1 overflow-hidden',
+        CATEGORY_COLOR[event.category]
+      )}
+    >
       {!isShort && (
         <span className="text-small text-white font-medium whitespace-nowrap select-none">
           {formatHour(event.startTime)}-{formatHour(event.startTime + event.duration)}
         </span>
+      )}
+      {!event.flexible && (
+        <LockIcon
+          sx={{ fontSize: 10, color: 'white', opacity: 0.7 }}
+          className="absolute top-0.5 right-0.5"
+        />
       )}
     </div>
   )

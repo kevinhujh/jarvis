@@ -1,0 +1,14 @@
+import type { EventTemplate } from '../../types'
+
+export const mockTemplates: EventTemplate[] = [
+  // Flexible — no fixed startTime, can be placed anywhere
+  { id: 't1', title: 'Deep work block', category: 'work',     duration: 2,    flexible: true },
+  { id: 't2', title: 'Reading',         category: 'learning', duration: 1,    flexible: true },
+  { id: 't3', title: 'Gym session',     category: 'exercise', duration: 1,    flexible: true },
+  { id: 't4', title: 'Grocery run',     category: 'errands',  duration: 1,    flexible: true },
+
+  // Inflexible — fixed startTime, user picks day and row only
+  { id: 't5', title: 'Morning standup', category: 'meeting',  duration: 0.25, flexible: false, startTime: 9  },
+  { id: 't6', title: 'Lunch break',     category: 'rest',     duration: 1,    flexible: false, startTime: 12 },
+  { id: 't7', title: 'Evening walk',    category: 'exercise', duration: 0.5,  flexible: false, startTime: 18 },
+]
