@@ -1,6 +1,9 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file describes the repository — its stack, architecture, and rules to follow when working on this project.
+For the project plan and progress, see below.
+
+@docs/CLAUDE.md
 
 ## Git Commit Messages
 
