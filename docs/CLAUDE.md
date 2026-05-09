@@ -67,12 +67,12 @@ Separating labels from bricks solves the short-event labeling problem: a 5-minut
 
 ### Event types (uniform timeline view only)
 
-| Type  | Duration     | Label behavior                          |
-|-------|--------------|-----------------------------------------|
-| Short | < 30 min*    | Static, left-aligned to brick left edge |
-| Long  | ≥ 30 min*    | Sliding (see below)                     |
+| Type  | Duration   | Label behavior                          |
+| ----- | ---------- | --------------------------------------- |
+| Short | < 30 min\* | Static, left-aligned to brick left edge |
+| Long  | ≥ 30 min\* | Sliding (see below)                     |
 
-*30 min is a starting threshold — tune to 1h if a 30-min brick cannot comfortably hold a ~20 char title.
+\*30 min is a starting threshold — tune to 1h if a 30-min brick cannot comfortably hold a ~20 char title.
 
 ### Label sliding behavior (long events only)
 
@@ -101,3 +101,46 @@ Titles are never rejected at input. Long titles are silently truncated so the la
 ### Label collision (consecutive short events)
 
 Since events within one row cannot overlap, label collisions only happen when several short events appear consecutively. In that case labels stack vertically. If a label is hidden under a stack, hovering the corresponding brick reveals it.
+
+---
+
+### Event data model
+
+```ts
+type CalendarEvent = {
+  id: string
+  day: number // 0=Mon … 6=Sun
+  startTime: number // e.g. 9.5 = 09:30
+  duration: number // hours; endHour is computed as startHour + duration
+  title: string
+  category: string // 'work' | 'personal' | 'family' | 'health' | etc.
+  row: 'primary' | 'secondary'
+  flexible: boolean // true = can be pushed; false = immovable anchor
+}
+```
+
+`endHour` is never stored — always computed. Day boundaries (hour 0 and hour 24) behave as implicit inflexible anchors for push collision purposes.
+
+---
+
+### Drag and drop (planned — not yet implemented)
+
+Six incremental commits:
+
+1. **Data model** — migrate `mockEvents` to `startHour + duration` shape; add `flexible` flag; remove `endHour` from storage
+2. **Drop zones + snapping grid** — overlay invisible 5-minute snap cells across each `EventRow`; show hover highlight on valid drop targets; no actual placement yet
+3. **Place from library** — drag a template card from `EventLibrary` onto a snap cell; event appears at that position
+4. **Relocate from grid** — drag an existing brick to a new position within the grid; remove from old slot, insert at new slot
+5. **Push mechanics** — when a flexible event would overlap another flexible event, push the chain forward; show a red shake animation if the chain hits an inflexible event or a day boundary (fail state, no mutation)
+6. **Edge resize** — drag the right edge of a brick to extend or shrink duration in 5-minute increments
+
+#### Push cascade rules
+
+- A **flexible** event can be displaced by an incoming event or another cascade.
+- An **inflexible** event cannot move; if a cascade reaches one, the entire drag fails (animated shake, no mutation).
+- Day boundaries (hour 0, hour 24) are treated as inflexible anchors — events cannot be pushed past midnight.
+- Push direction: always forward (later in the day). No backward push.
+
+#### Snapping
+
+All positions snap to 5-minute intervals: `Math.round(rawHour * 12) / 12`.

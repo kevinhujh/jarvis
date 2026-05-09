@@ -66,4 +66,6 @@ Entry: `index.html` → `src/main.tsx` → `src/App.tsx` → `src/Workspace.tsx`
 
 **Extensible slot pattern** — chart slots (and similar extensible UI slots) are registered as `type ChartTab = { id: string; label: string }`. The `id` drives context state and conditional rendering; the `label` drives the segmented control UI. Adding a new chart means appending to the tab array — no structural changes required.
 
+**Maintenance** — when a commit introduces a new architectural pattern or convention, update this file in the same commit; when it adds new components, layouts, or features, also update `docs/CLAUDE.md`. Docs that drift behind the code are worse than no docs.
+
 **TypeScript** is configured in bundler mode with strict unused-variable checking (`noUnusedLocals`, `noUnusedParameters`). `erasableSyntaxOnly` is enabled — avoid TypeScript-only syntax that emits runtime code (e.g. `enum`, parameter properties). Prefer `type` over `interface` for all type definitions.
