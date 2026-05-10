@@ -1,18 +1,16 @@
 import clsx from 'clsx'
-import Tooltip from '@mui/material/Tooltip'
-import AddIcon from '@mui/icons-material/Add'
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator'
-import { MAX_EVENT_TEMPLATES } from './constants'
 import { CATEGORY_COLOR } from './categoryColors'
 import type { EventTemplate } from '../../types'
 import { useTimetableContext } from '../../contexts/timetable/useTimetableContext'
-import { formatHour } from '../../utils/time'
+import { formatHour, formatDuration } from '../../utils/time'
 import { spawnDragGhost } from './dndUtils'
+import NewTemplatePanel from './NewTemplatePanel'
 
 function TemplateCard({ tpl }: { tpl: EventTemplate }) {
   const { startDrag, endDrag, scrollToTime } = useTimetableContext()
 
-  const durationLabel = tpl.duration < 1 ? `${Math.round(tpl.duration * 60)}m` : `${tpl.duration}h`
+  const durationLabel = formatDuration(tpl.duration)
 
   const subtitle = tpl.flexible ? durationLabel : `${formatHour(tpl.startTime)} · ${durationLabel}`
 
@@ -49,7 +47,7 @@ function Section({ label, templates }: { label: string; templates: EventTemplate
   if (templates.length === 0) return null
   return (
     <div className="flex flex-col gap-1.5">
-      <span className="text-tiny text-content-secondary uppercase tracking-widest px-1">
+      <span className="text-mini text-content-secondary uppercase tracking-widest px-1">
         {label}
       </span>
       {templates.map((tpl) => (
@@ -71,29 +69,7 @@ export default function EventLibrary() {
         <Section label="Fixed" templates={inflexible} />
       </div>
 
-      <div className="shrink-0 border-t border-border-primary p-4">
-        <Tooltip
-          title={
-            templates.length >= MAX_EVENT_TEMPLATES ? 'Template limit reached' : 'New template'
-          }
-          placement="top"
-        >
-          <span className="block">
-            <button
-              disabled={templates.length >= MAX_EVENT_TEMPLATES}
-              className={clsx(
-                'w-full flex items-center justify-center gap-1.5 py-2 transition-colors bg-surface-primary shadow-sm',
-                'rounded border border-dashed border-border-primary',
-                'text-content-secondary text-small hover:text-content-primary',
-                'hover:border-content-primary disabled:opacity-40 disabled:cursor-not-allowed'
-              )}
-            >
-              <AddIcon sx={{ fontSize: 16 }} />
-              New Template
-            </button>
-          </span>
-        </Tooltip>
-      </div>
+      <NewTemplatePanel />
     </div>
   )
 }

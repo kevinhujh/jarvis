@@ -20,6 +20,7 @@ export type TimetableContextProps = {
   setSelectedDayChart: (id: string) => void
   events: CalendarEvent[]
   templates: EventTemplate[]
+  addTemplate: (template: Omit<EventTemplate, 'id'>) => void
   tryPlace: (source: DragSource, day: number, row: EventRow, startTime: number) => boolean
   tryResize: (eventId: string, newDuration: number) => boolean
   dragSource: DragSource | null

@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect, useCallback } from 'react'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
-import { HOUR_WIDTH, TRACK_WIDTH, SUMMARY_MIN_HEIGHT } from './constants'
+import { EVENT_LIBRARY_WIDTH, HOUR_WIDTH, TRACK_WIDTH, SUMMARY_MIN_HEIGHT } from './constants'
 import { getWeekStart } from '../../utils/time'
 import { useDateContext } from '../../contexts/date/useDateContext'
 import { useTimetableContext } from '../../contexts/timetable/useTimetableContext'
@@ -166,36 +166,43 @@ export default function WeekTimetable() {
         </div>
       </div>
 
-      {/* Library pull tab */}
-      <div
-        className="shrink-0 w-10 flex flex-col items-center justify-center gap-4 cursor-pointer rounded-md ring ring-border-primary bg-surface-primary text-content-secondary hover:text-content-primary transition-colors select-none"
-        onClick={() => setIsLibraryOpen((prev) => !prev)}
-      >
-        {isLibraryOpen ? (
-          <ChevronRightIcon fontSize="small" />
-        ) : (
-          <ChevronLeftIcon fontSize="small" />
-        )}
-        <span className="[writing-mode:vertical-rl] rotate-180 text-small tracking-widest uppercase">
-          Library
-        </span>
-      </div>
+      {/* Library widget — strip + drawer share one card */}
+      <div className="shrink-0 flex flex-row rounded-md ring ring-border-primary bg-surface-primary overflow-hidden transition-[width] duration-300 ease-in-out">
+        {/* Pull tab */}
+        <div
+          className="shrink-0 w-10 flex flex-col items-center justify-center gap-4 cursor-pointer text-content-secondary hover:text-content-primary transition-colors select-none"
+          onClick={() => setIsLibraryOpen((prev) => !prev)}
+        >
+          {isLibraryOpen ? (
+            <ChevronRightIcon fontSize="small" />
+          ) : (
+            <ChevronLeftIcon fontSize="small" />
+          )}
+          <span className="[writing-mode:vertical-rl] rotate-180 text-small tracking-widest uppercase">
+            Library
+          </span>
+        </div>
 
-      {/* Library drawer */}
-      <div
-        className={clsx(
-          'shrink-0 overflow-hidden rounded-md ring ring-border-primary bg-surface-primary flex flex-col transition-all duration-300 ease-in-out',
-          isLibraryOpen ? 'w-[260px] opacity-100' : 'w-0 opacity-0 ring-0'
-        )}
-      >
-        <div className="w-[260px] h-full flex flex-col min-h-0">
-          <div className="shrink-0 px-4 py-2 border-b border-border-primary">
-            <span className="text-small text-content-secondary uppercase tracking-widest">
-              Event Templates
-            </span>
-          </div>
-          <div className="flex-1 min-h-0">
-            <EventLibrary />
+        {/* Drawer */}
+        <div
+          style={{ width: isLibraryOpen ? EVENT_LIBRARY_WIDTH : 0 }}
+          className={clsx(
+            'shrink-0 overflow-hidden transition-[width] duration-300 ease-in-out',
+            isLibraryOpen && 'border-l border-border-primary'
+          )}
+        >
+          <div
+            style={{ width: EVENT_LIBRARY_WIDTH }}
+            className="h-full flex flex-col min-h-0"
+          >
+            <div className="shrink-0 px-4 py-2 border-b border-border-primary">
+              <span className="text-small text-content-secondary uppercase tracking-widest">
+                Event Templates
+              </span>
+            </div>
+            <div className="flex-1 min-h-0">
+              <EventLibrary />
+            </div>
           </div>
         </div>
       </div>

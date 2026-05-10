@@ -6,6 +6,7 @@ import { useTimetableContext } from '../../contexts/timetable/useTimetableContex
 import EventBrick from './EventBrick'
 import EventLabel from './EventLabel'
 import { spawnDragGhost } from './dndUtils'
+import { formatDuration } from '../../utils/time'
 
 const MIN_DURATION = MIN_EVENT_DURATION_MINUTES / 60
 
@@ -95,10 +96,7 @@ export default function EventItem({ event, scrollLeft }: Props) {
         event.flexible
           ? (e) => {
               e.dataTransfer.setData('text/plain', event.id)
-              const subtitle =
-                event.duration < 1
-                  ? `${Math.round(event.duration * 60)}m`
-                  : `${event.duration}h`
+              const subtitle = formatDuration(event.duration)
               const ghost = spawnDragGhost({
                 title: event.title,
                 subtitle,

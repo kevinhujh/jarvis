@@ -12,6 +12,17 @@ export function formatHour(hour: number): string {
   return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`
 }
 
+// Renders an hours-as-decimal value as a compact `<H>h<M>m` string. Skips a
+// part when it would be zero (so 0.5 → "30m", 1 → "1h", 1.5 → "1h30m").
+export function formatDuration(hours: number): string {
+  const totalMinutes = Math.round(hours * 60)
+  const h = Math.floor(totalMinutes / 60)
+  const m = totalMinutes % 60
+  if (h === 0) return `${m}m`
+  if (m === 0) return `${h}h`
+  return `${h}h${m}m`
+}
+
 export function buildCalendarWeeks(year: number, month: number): (Date | null)[][] {
   const firstDay = new Date(year, month, 1)
   const lastDay = new Date(year, month + 1, 0)

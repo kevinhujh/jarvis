@@ -1,14 +1,14 @@
 export type EventCategory =
-  | 'work'
-  | 'meeting'
   | 'health'
   | 'exercise'
   | 'family'
-  | 'social'
-  | 'learning'
-  | 'errands'
   | 'leisure'
   | 'rest'
+  | 'work'
+  | 'learning'
+  | 'meeting'
+  | 'social'
+  | 'misc'
 
 export type EventRow = 'primary' | 'secondary'
 

@@ -5,7 +5,7 @@ export const mockTemplates: EventTemplate[] = [
   { id: 't1', title: 'Deep work', category: 'work', duration: 2, flexible: true },
   { id: 't2', title: 'Reading', category: 'learning', duration: 1, flexible: true },
   { id: 't3', title: 'Gym session', category: 'exercise', duration: 1, flexible: true },
-  { id: 't4', title: 'Grocery run', category: 'errands', duration: 1, flexible: true },
+  { id: 't4', title: 'Grocery run', category: 'misc', duration: 1, flexible: true },
 
   // Inflexible — fixed startTime, user picks day and row only
   {

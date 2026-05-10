@@ -2,7 +2,7 @@ import { useState, useCallback, useRef, useEffect } from 'react'
 import type { ReactNode } from 'react'
 import { TimetableContext } from './context'
 import type { DragSource, GuideState } from './context'
-import type { CalendarEvent, EventRow } from '../../types'
+import type { CalendarEvent, EventRow, EventTemplate } from '../../types'
 import { mockEvents } from '../../modules/weektimetable/mockData'
 import { mockTemplates } from '../../modules/weektimetable/mockTemplates'
 import { computeCascade } from '../../modules/weektimetable/dndUtils'
@@ -13,9 +13,9 @@ export default function TimetableProvider({ children }: Props) {
   const [selectedWeekChart, setSelectedWeekChart] = useState('week-density')
   const [selectedDayChart, setSelectedDayChart] = useState('day-allocation')
   const [events, setEvents] = useState<CalendarEvent[]>(mockEvents)
+  const [templates, setTemplates] = useState<EventTemplate[]>(mockTemplates)
   const [dragSource, setDragSource] = useState<DragSource | null>(null)
   const [guides, setGuides] = useState<GuideState | null>(null)
-  const templates = mockTemplates
 
   // Ref keeps tryPlace / tryResize / tryRelocateEvent reading fresh event
   // state without listing events as a dep. Update is deferred to a post-render
@@ -111,6 +111,11 @@ export default function TimetableProvider({ children }: Props) {
     [templates]
   )
 
+  const addTemplate = useCallback((template: Omit<EventTemplate, 'id'>) => {
+    const withId = { ...template, id: crypto.randomUUID() } as EventTemplate
+    setTemplates((prev) => [...prev, withId])
+  }, [])
+
   const tryResize = useCallback((eventId: string, newDuration: number): boolean => {
     const target = eventsRef.current.find((e) => e.id === eventId)
     if (!target) return false
@@ -144,6 +149,7 @@ export default function TimetableProvider({ children }: Props) {
         selectedDayChart, setSelectedDayChart,
         events,
         templates,
+        addTemplate,
         tryPlace,
         tryResize,
         dragSource,

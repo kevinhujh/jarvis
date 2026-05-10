@@ -15,7 +15,7 @@ export const mockEvents: CalendarEvent[] = [
   // Wednesday
   { id: '7',  title: 'Client call',      day: 2, startTime: 14,           duration: 1,             row: 'primary',   category: 'meeting',  flexible: false },
   { id: '8',  title: 'Weekly report',    day: 2, startTime: 16,           duration: 1,             row: 'primary',   category: 'work',     flexible: true  },
-  { id: '9',  title: 'Gardener',         day: 2, startTime: 13,           duration: 3,             row: 'secondary', category: 'errands',  flexible: false },
+  { id: '9',  title: 'Gardener',         day: 2, startTime: 13,           duration: 3,             row: 'secondary', category: 'misc',     flexible: false },
 
   // Thursday
   { id: '10', title: 'Doctor',           day: 3, startTime: 9.5,          duration: 1,             row: 'primary',   category: 'health',   flexible: false },
@@ -28,8 +28,8 @@ export const mockEvents: CalendarEvent[] = [
   { id: '15', title: 'Online course',    day: 4, startTime: 15,           duration: 2,             row: 'secondary', category: 'learning', flexible: true  },
 
   // Saturday
-  { id: '16', title: 'Grocery shopping', day: 5, startTime: 10,           duration: 1,             row: 'primary',   category: 'errands',  flexible: true  },
-  { id: '17', title: 'Laundry',          day: 5, startTime: 10.5,         duration: 1,             row: 'secondary', category: 'errands',  flexible: true  },
+  { id: '16', title: 'Grocery shopping', day: 5, startTime: 10,           duration: 1,             row: 'primary',   category: 'misc',     flexible: true  },
+  { id: '17', title: 'Laundry',          day: 5, startTime: 10.5,         duration: 1,             row: 'secondary', category: 'misc',     flexible: true  },
 
   // Sunday
   { id: '18', title: 'Weekly review',    day: 6, startTime: 18,           duration: 1,             row: 'primary',   category: 'work',     flexible: true  },
