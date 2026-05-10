@@ -15,6 +15,9 @@ dist-ssr
 # Claude Code local settings
 .claude/settings.local.json
 
+# Local-only project plan (do not version)
+docs/CLAUDE.md
+
 # Reference images (local design assets, not for version control)
 src/assets/ref/
 
