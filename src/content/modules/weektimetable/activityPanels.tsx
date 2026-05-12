@@ -12,23 +12,40 @@ type ChartTab = { id: string; label: string }
 // --- Shared computation ---
 
 const SLOTS_PER_HOUR = 12
+const SLOT_MINUTES = 60 / SLOTS_PER_HOUR
 const MAX_WEEK_DENSITY = 7 * SLOTS_PER_HOUR
 
 type HourSlice = { allocated: number; free: number }
 
+// Convert an event's `startTime` (hours, possibly fractional like 191/12 = 15.91666…)
+// to integer minutes. Snapping guarantees the rounded value is exact.
+// Comparing slot boundaries in integer minutes avoids floating-point drift:
+// `slotStart + 1/SLOTS_PER_HOUR` accumulates error differently across hour
+// indices, so the same 5-minute-boundary event at h=15 vs h=17 can compare
+// inequally — that's the bug this helper eliminates.
+const eventMinutes = (e: CalendarEvent) => {
+  const start = Math.round(e.startTime * 60)
+  return { start, end: start + Math.round(e.duration * 60) }
+}
+
 function computeDayAllocation(events: CalendarEvent[], dayIndex: number): HourSlice[] {
   return Array.from({ length: TOTAL_HOURS }, (_, hour) => {
     let allocatedSlots = 0
+    const hourStart = hour * 60
     for (let slot = 0; slot < SLOTS_PER_HOUR; slot++) {
-      const slotStart = hour + slot / SLOTS_PER_HOUR
-      const slotEnd = slotStart + 1 / SLOTS_PER_HOUR
+      const slotStart = hourStart + slot * SLOT_MINUTES
+      const slotEnd = slotStart + SLOT_MINUTES
       if (
-        events.some((e) => e.day === dayIndex && e.startTime < slotEnd && e.startTime + e.duration > slotStart)
+        events.some((e) => {
+          if (e.day !== dayIndex) return false
+          const { start, end } = eventMinutes(e)
+          return start < slotEnd && end > slotStart
+        })
       ) {
         allocatedSlots++
       }
     }
-    const allocated = allocatedSlots * 5
+    const allocated = allocatedSlots * SLOT_MINUTES
     return { allocated, free: 60 - allocated }
   })
 }
@@ -36,11 +53,18 @@ function computeDayAllocation(events: CalendarEvent[], dayIndex: number): HourSl
 function computeWeekDensity(events: CalendarEvent[]): number[] {
   return Array.from({ length: TOTAL_HOURS }, (_, hour) => {
     let total = 0
+    const hourStart = hour * 60
     for (let day = 0; day < 7; day++) {
       for (let slot = 0; slot < SLOTS_PER_HOUR; slot++) {
-        const slotStart = hour + slot / SLOTS_PER_HOUR
-        const slotEnd = slotStart + 1 / SLOTS_PER_HOUR
-        if (events.some((e) => e.day === day && e.startTime < slotEnd && e.startTime + e.duration > slotStart)) {
+        const slotStart = hourStart + slot * SLOT_MINUTES
+        const slotEnd = slotStart + SLOT_MINUTES
+        if (
+          events.some((e) => {
+            if (e.day !== day) return false
+            const { start, end } = eventMinutes(e)
+            return start < slotEnd && end > slotStart
+          })
+        ) {
           total++
         }
       }

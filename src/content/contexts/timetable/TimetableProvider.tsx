@@ -1,7 +1,13 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
 import type { ReactNode } from 'react'
 import { TimetableContext } from './context'
-import type { DragSource, GuideState } from './context'
+import type {
+  DragSource,
+  GuideState,
+  EditingEventState,
+  EventMetaPatch,
+  EventGeometryPatch,
+} from './context'
 import type { CalendarEvent, EventRow, EventTemplate } from '../../types'
 import { mockEvents } from '../../modules/weektimetable/mockData'
 import { mockTemplates } from '../../modules/weektimetable/mockTemplates'
@@ -16,6 +22,7 @@ export default function TimetableProvider({ children }: Props) {
   const [templates, setTemplates] = useState<EventTemplate[]>(mockTemplates)
   const [dragSource, setDragSource] = useState<DragSource | null>(null)
   const [guides, setGuides] = useState<GuideState | null>(null)
+  const [editingEvent, setEditingEvent] = useState<EditingEventState | null>(null)
 
   // Ref keeps tryPlace / tryResize / tryRelocateEvent reading fresh event
   // state without listing events as a dep. Update is deferred to a post-render
@@ -142,6 +149,48 @@ export default function TimetableProvider({ children }: Props) {
     return true
   }, [])
 
+  const removeEvent = useCallback((id: string) => {
+    setEvents((prev) => prev.filter((e) => e.id !== id))
+    setEditingEvent((prev) => (prev?.id === id ? null : prev))
+  }, [])
+
+  const updateEventMeta = useCallback((id: string, patch: EventMetaPatch) => {
+    setEvents((prev) => prev.map((e) => (e.id === id ? { ...e, ...patch } : e)))
+  }, [])
+
+  const tryRelocateEvent = useCallback((id: string, patch: EventGeometryPatch): boolean => {
+    const target = eventsRef.current.find((e) => e.id === id)
+    if (!target) return false
+
+    const day = patch.day ?? target.day
+    const row = patch.row ?? target.row
+    const startTime = patch.startTime ?? target.startTime
+    const duration = patch.duration ?? target.duration
+
+    if (duration <= 0) return false
+
+    const cascade = computeCascade(eventsRef.current, day, row, startTime, duration, id)
+    if (!cascade.success) return false
+
+    setEvents((prev) =>
+      prev.map((e) => {
+        if (e.id === id) return { ...e, day, row, startTime, duration }
+        if (cascade.moves.has(e.id)) return { ...e, startTime: cascade.moves.get(e.id)! }
+        return e
+      })
+    )
+
+    return true
+  }, [])
+
+  const openEventEditor = useCallback((id: string, anchor: { x: number; y: number }) => {
+    setEditingEvent({ id, anchor })
+  }, [])
+
+  const closeEventEditor = useCallback(() => {
+    setEditingEvent(null)
+  }, [])
+
   return (
     <TimetableContext.Provider
       value={{
@@ -152,6 +201,12 @@ export default function TimetableProvider({ children }: Props) {
         addTemplate,
         tryPlace,
         tryResize,
+        removeEvent,
+        updateEventMeta,
+        tryRelocateEvent,
+        editingEvent,
+        openEventEditor,
+        closeEventEditor,
         dragSource,
         startDrag,
         endDrag,

@@ -21,3 +21,13 @@ export const SNAP_WIDTH = HOUR_WIDTH / SNAPS_PER_HOUR           // px per 5-min 
 // so the open/closed wrapper and the inner content column read from one
 // source — a `w-[280px]` hardcoded in both spots would let them drift.
 export const EVENT_LIBRARY_WIDTH = 280
+
+// Right-click context menu dimensions. The strip + panel widths feed both the
+// inline `style={{ width: ... }}` on each column AND the anchor-clamp math
+// that ensures the menu fits in the viewport. Using a Tailwind `w-40` here
+// would let the layout drift silently from the clamp, so JS constants are
+// the source of truth and the `style` props read from them.
+export const MENU_STRIP_WIDTH = 160       // px, left column of action rows
+export const CONFIG_PANEL_WIDTH = 280     // px, right column with the edit form
+export const CONTEXT_MENU_HEIGHT = 400    // px, worst-case height used for clamp
+export const VIEWPORT_MARGIN = 8          // px, gap between menu edge and viewport

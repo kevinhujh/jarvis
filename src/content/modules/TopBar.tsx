@@ -5,13 +5,10 @@ import DarkModeIcon from '@mui/icons-material/DarkMode'
 import LightModeIcon from '@mui/icons-material/LightMode'
 import Popover from '../components/Popover'
 import MiniCalendar from './MiniCalendar'
+import { useThemeContext } from '../contexts/theme/useThemeContext'
 
-type Props = {
-  isDark: boolean
-  onToggleTheme: () => void
-}
-
-export default function TopBar({ isDark, onToggleTheme }: Props) {
+export default function TopBar() {
+  const { isDark, toggle } = useThemeContext()
   const [calendarAnchor, setCalendarAnchor] = useState<HTMLButtonElement | null>(null)
 
   return (
@@ -29,7 +26,7 @@ export default function TopBar({ isDark, onToggleTheme }: Props) {
 
         <IconButton
           size="small"
-          onClick={onToggleTheme}
+          onClick={toggle}
           sx={{ color: 'var(--color-content-secondary)' }}
         >
           {isDark ? (

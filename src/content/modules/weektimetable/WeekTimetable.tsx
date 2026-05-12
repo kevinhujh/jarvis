@@ -9,6 +9,7 @@ import TimeAxisHeader from './TimeAxisHeader'
 import DayLabelColumn from './DayLabelColumn'
 import DayRow from './DayRow'
 import EventLibrary from './EventLibrary'
+import EventContextMenu from './EventContextMenu'
 import GridGuides from './GridGuides'
 import { WeekDensityPanel, DayDensityPanel } from './activityPanels'
 import clsx from 'clsx'
@@ -115,6 +116,8 @@ export default function WeekTimetable() {
   }, [])
 
   return (
+    <>
+    <EventContextMenu />
     <div data-testid="week-timetable" className="flex flex-row gap-4 w-full p-4 flex-1 min-h-0">
       {/* Main content column */}
       <div className="flex flex-col flex-1 min-w-0 min-h-0 gap-4">
@@ -207,5 +210,6 @@ export default function WeekTimetable() {
         </div>
       </div>
     </div>
+    </>
   )
 }

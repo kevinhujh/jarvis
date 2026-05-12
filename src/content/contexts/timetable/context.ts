@@ -1,5 +1,5 @@
 import { createContext } from 'react'
-import type { CalendarEvent, EventTemplate, EventRow } from '../../types'
+import type { CalendarEvent, EventCategory, EventTemplate, EventRow } from '../../types'
 
 export type DragSource =
   | { kind: 'template'; templateId: string }
@@ -13,6 +13,24 @@ export type GuideState = {
   mode: GuideMode
 }
 
+export type EventMetaPatch = {
+  title?: string
+  category?: EventCategory
+  flexible?: boolean
+}
+
+export type EventGeometryPatch = {
+  day?: number
+  row?: EventRow
+  startTime?: number
+  duration?: number
+}
+
+export type EditingEventState = {
+  id: string
+  anchor: { x: number; y: number }
+}
+
 export type TimetableContextProps = {
   selectedWeekChart: string
   setSelectedWeekChart: (id: string) => void
@@ -23,6 +41,12 @@ export type TimetableContextProps = {
   addTemplate: (template: Omit<EventTemplate, 'id'>) => void
   tryPlace: (source: DragSource, day: number, row: EventRow, startTime: number) => boolean
   tryResize: (eventId: string, newDuration: number) => boolean
+  removeEvent: (id: string) => void
+  updateEventMeta: (id: string, patch: EventMetaPatch) => void
+  tryRelocateEvent: (id: string, patch: EventGeometryPatch) => boolean
+  editingEvent: EditingEventState | null
+  openEventEditor: (id: string, anchor: { x: number; y: number }) => void
+  closeEventEditor: () => void
   dragSource: DragSource | null
   startDrag: (source: DragSource) => void
   endDrag: () => void

@@ -4,6 +4,7 @@ import { SHORT_THRESHOLD } from './constants'
 import { CATEGORY_COLOR } from './categoryColors'
 import type { CalendarEvent } from '../../types'
 import { formatHour } from '../../utils/time'
+import { useTimetableContext } from '../../contexts/timetable/useTimetableContext'
 
 type ResizeHandlers = {
   onPointerDown: (e: React.PointerEvent<HTMLDivElement>) => void
@@ -18,10 +19,15 @@ type Props = {
 
 export default function EventBrick({ event, resizeHandlers }: Props) {
   const isShort = event.duration < SHORT_THRESHOLD
+  const { openEventEditor } = useTimetableContext()
 
   return (
     <div
       data-testid={`event-brick-${event.id}`}
+      onContextMenu={(e) => {
+        e.preventDefault()
+        openEventEditor(event.id, { x: e.clientX, y: e.clientY })
+      }}
       className={clsx(
         'relative flex-1 w-full flex items-center rounded-md p-1 overflow-hidden',
         CATEGORY_COLOR[event.category]

@@ -10,7 +10,6 @@ type View = 'landing' | 'app' | 'testground'
 
 export default function Workspace() {
   const [view, setView] = useState<View>('landing')
-  const [isDark, setIsDark] = useState(false)
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -24,9 +23,9 @@ export default function Workspace() {
     return (
       <DateProvider>
       <TimetableProvider>
-        <div id="workspace" className={isDark ? 'dark' : ''}>
+        <div id="workspace">
           <div className="h-screen flex flex-col bg-background-primary text-content-primary">
-            <TopBar isDark={isDark} onToggleTheme={() => setIsDark((d) => !d)} />
+            <TopBar />
             <div data-testid="timetable-dashboard" className="flex-1 flex flex-row min-h-0">
               <div className="flex flex-col flex-1 min-w-0">
                 <WeekTimetable />
