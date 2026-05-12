@@ -29,10 +29,15 @@ export default function WeekTimetable() {
 
   const [focusedDay, setFocusedDay] = useState<number | null>(isCurrentWeek ? todayDayIndex : null)
 
-  useEffect(() => {
-    const nowIsCurrentWeek = weekStart.getTime() === getWeekStart(new Date()).getTime()
-    setFocusedDay(nowIsCurrentWeek ? todayDayIndex : null)
-  }, [weekStart, todayDayIndex])
+  // Reset focusedDay when the user navigates to a different week or when
+  // "today" rolls over midnight. Using the "during-render reset on key
+  // change" pattern instead of useEffect avoids the cascading-renders that
+  // happen when setState is called inside an effect body.
+  const [prevKey, setPrevKey] = useState({ weekStart, todayDayIndex })
+  if (prevKey.weekStart !== weekStart || prevKey.todayDayIndex !== todayDayIndex) {
+    setPrevKey({ weekStart, todayDayIndex })
+    setFocusedDay(isCurrentWeek ? todayDayIndex : null)
+  }
 
   useEffect(() => {
     registerScrollToTime((time: number) => {
@@ -67,6 +72,10 @@ export default function WeekTimetable() {
       scrollRef.current.scrollLeft = target
       setScrollLeft(target)
     }
+    // `events` is intentionally read from closure without being a dep —
+    // this effect's job is the initial scroll-to-today when the week
+    // changes, not to re-scroll on every event mutation.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [weekStart, todayDayIndex, isCurrentWeek])
 
   const handleScroll = useCallback(() => {

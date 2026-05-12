@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import type { ReactNode } from 'react'
 import { TimetableContext } from './context'
 import type { DragSource, GuideState } from './context'
@@ -17,9 +17,15 @@ export default function TimetableProvider({ children }: Props) {
   const [guides, setGuides] = useState<GuideState | null>(null)
   const templates = mockTemplates
 
-  // Ref keeps tryPlace reading fresh event state without listing events as a dep
+  // Ref keeps tryPlace / tryResize / tryRelocateEvent reading fresh event
+  // state without listing events as a dep. Update is deferred to a post-render
+  // effect so we don't mutate a ref during render — the consumers are user-
+  // event handlers (drag/drop, click, contextmenu) that fire well after the
+  // commit phase, so the one-microtask delay is invisible to them.
   const eventsRef = useRef(events)
-  eventsRef.current = events
+  useEffect(() => {
+    eventsRef.current = events
+  }, [events])
 
   const scrollFnRef = useRef<((time: number) => void) | null>(null)
   const registerScrollToTime = useCallback((fn: (time: number) => void) => {
