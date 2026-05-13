@@ -1,5 +1,16 @@
-import { Select as MUISelect, MenuItem, ListSubheader } from '@mui/material'
+import { Fade, OutlinedInput, Select as MUISelect, MenuItem, ListSubheader } from '@mui/material'
+import clsx from 'clsx'
 import type { ReactNode } from 'react'
+
+type SelectClassNames = {
+  root?: string
+  input?: string
+  notchedOutline?: string
+  select?: string
+  paper?: string
+  menuItem?: string
+  listSubheader?: string
+}
 
 type Option<T extends string | number> = { value: T; label: ReactNode }
 
@@ -10,6 +21,7 @@ type Props<T extends string | number> = {
   disabled?: boolean
   width?: number | string
   header?: ReactNode
+  classNames?: SelectClassNames
 }
 
 export default function Select<T extends string | number>({
@@ -19,6 +31,7 @@ export default function Select<T extends string | number>({
   disabled,
   width = '100%',
   header,
+  classNames,
 }: Props<T>) {
   return (
     <MUISelect
@@ -26,64 +39,53 @@ export default function Select<T extends string | number>({
       onChange={(e) => onChange(e.target.value as T)}
       disabled={disabled}
       size="small"
-      sx={{
-        width,
-        borderRadius: '6px',
-        fontSize: 'var(--text-small)',
-        backgroundColor: 'var(--color-surface-primary)',
-        color: 'var(--color-content-primary)',
-        '& .MuiOutlinedInput-notchedOutline': {
-          borderColor: 'var(--color-border-primary)',
-        },
-        '&:hover .MuiOutlinedInput-notchedOutline': {
-          borderColor: 'var(--color-border-primary)',
-        },
-        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-          borderColor: 'var(--color-brand-primary)',
-          borderWidth: '1px',
-        },
-        '& .MuiSelect-select': {
-          padding: '6px 8px',
-          minHeight: 'unset',
-        },
+      style={{ width }}
+      className={clsx(classNames?.root)}
+      input={
+        <OutlinedInput
+          classes={{
+            root: clsx(
+              classNames?.input ??
+                'rounded-md text-small bg-surface-primary text-content-primary ring ring-border-primary focus:ring-brand-primary focus-within:ring-brand-primary transition'
+            ),
+            notchedOutline: clsx(classNames?.notchedOutline ?? 'border-0'),
+          }}
+        />
+      }
+      classes={{
+        select: clsx(classNames?.select ?? 'py-1.5 px-2 min-h-0'),
       }}
       MenuProps={{
+        slots: { transition: Fade },
         slotProps: {
           paper: {
-            sx: {
-              backgroundColor: 'var(--color-surface-primary)',
-              color: 'var(--color-content-primary)',
-              border: '1px solid var(--color-border-primary)',
-              borderRadius: '4px',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-              mt: 0.5,
-              '& .MuiMenuItem-root': {
-                fontSize: 'var(--text-small)',
-                minHeight: 'unset',
-                padding: '6px 8px',
-              },
-              '& .MuiMenuItem-root.Mui-selected': {
-                backgroundColor: 'var(--color-surface-secondary)',
-              },
-              '& .MuiMenuItem-root.Mui-selected:hover': {
-                backgroundColor: 'var(--color-surface-secondary)',
-              },
-              '& .MuiListSubheader-root': {
-                fontSize: 'var(--text-mini)',
-                lineHeight: 1,
-                padding: '8px 8px 4px',
-                color: 'var(--color-content-secondary)',
-                backgroundColor: 'transparent',
-                pointerEvents: 'none',
-              },
-            },
+            className: clsx(
+              classNames?.paper ??
+                'bg-surface-primary text-content-primary ring ring-border-primary rounded-sm mt-1 shadow-[0_4px_12px_rgba(0,0,0,0.1)]'
+            ),
           },
         },
       }}
     >
-      {header && <ListSubheader>{header}</ListSubheader>}
+      {header && (
+        <ListSubheader
+          className={clsx(
+            classNames?.listSubheader ??
+              'text-mini leading-none px-2 pt-2 pb-1 text-content-secondary bg-transparent pointer-events-none'
+          )}
+        >
+          {header}
+        </ListSubheader>
+      )}
       {options.map((o) => (
-        <MenuItem key={String(o.value)} value={o.value}>
+        <MenuItem
+          key={String(o.value)}
+          value={o.value}
+          className={clsx(
+            classNames?.menuItem ??
+              'text-small min-h-0 py-1.5 px-2 [&.Mui-selected]:bg-surface-secondary [&.Mui-selected:hover]:bg-surface-secondary'
+          )}
+        >
           {o.label}
         </MenuItem>
       ))}

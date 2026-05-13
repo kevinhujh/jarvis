@@ -4,14 +4,12 @@ import { Collapse, Divider } from '@mui/material'
 import Tooltip from '@mui/material/Tooltip'
 import AddIcon from '@mui/icons-material/Add'
 import type { EventCategory, EventTemplate } from '../../types'
-import { CATEGORY_COLOR } from './categoryColors'
+import { CATEGORY_COLOR, CATEGORIES } from '../../categoryColors'
 import { useTimetableContext } from '../../contexts/timetable/useTimetableContext'
 import { MAX_EVENT_TEMPLATES, MAX_TITLE_LENGTH, MIN_EVENT_DURATION_MINUTES } from './constants'
 import Switch from '../../components/Switch'
 import NumberField from '../../components/NumberField'
 import Select from '../../components/Select'
-
-const CATEGORIES = Object.keys(CATEGORY_COLOR) as EventCategory[]
 
 const DEFAULT_DURATION_HOUR = 0
 const DEFAULT_DURATION_MINUTE = 30
@@ -89,7 +87,7 @@ export default function NewTemplatePanel() {
   // "Cancel" (open). Same DOM element so border/background can transition;
   // text and icon swap instantly.
   const bottomBtnClass = clsx(
-    'w-full flex items-center justify-center gap-1.5 py-2 transition-colors text-small',
+    'w-full flex items-center justify-center gap-2 py-2 transition-colors text-small',
     'rounded-md border border-border-primary bg-surface-primary shadow-sm',
     'text-content-secondary hover:text-content-primary hover:bg-surface-secondary/70',
     !isOpen && 'border-dashed disabled:opacity-40 disabled:cursor-not-allowed'
@@ -105,7 +103,7 @@ export default function NewTemplatePanel() {
 
           <label className="flex flex-col gap-1">
             <span className="text-mini text-content-secondary">Title</span>
-            <div className="w-full px-2 py-1.5 rounded-md border border-border-primary bg-surface-primary flex items-center gap-2 focus-within:border-brand-primary">
+            <div className="w-full px-2 py-1.5 rounded-md ring ring-border-primary bg-surface-primary flex items-center gap-2 focus-within:ring-brand-primary">
               <input
                 type="text"
                 value={title}

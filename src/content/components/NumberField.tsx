@@ -1,7 +1,15 @@
 import { TextField as MUITextField } from '@mui/material'
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
+import clsx from 'clsx'
 import type { KeyboardEvent, ClipboardEvent, WheelEvent } from 'react'
+
+type NumberFieldClassNames = {
+  root?: string
+  input?: string
+  notchedOutline?: string
+  htmlInput?: string
+}
 
 type Props = {
   value: number
@@ -14,6 +22,7 @@ type Props = {
   // When set, the displayed value is zero-padded to this many digits
   // (e.g. padTo={2} renders 9 as "09"). Affects display only.
   padTo?: number
+  classNames?: NumberFieldClassNames
 }
 
 // Block typing — value can only change via the arrow buttons or scroll wheel.
@@ -33,6 +42,7 @@ export default function NumberField({
   disabled,
   width = 64,
   padTo,
+  classNames,
 }: Props) {
   const clamp = (v: number) => {
     if (min !== undefined && v < min) return min
@@ -63,14 +73,19 @@ export default function NumberField({
       size="small"
       value={display}
       disabled={disabled}
+      style={{ width }}
       slotProps={{
-        htmlInput: {
-          readOnly: true,
-          inputMode: 'none',
-          onKeyDown: blockTyping,
-          onPaste: blockPaste,
+        root: {
+          className: clsx(classNames?.root),
         },
         input: {
+          className: clsx(
+            classNames?.input ??
+              'rounded-md text-small bg-surface-primary text-content-primary ring ring-border-primary focus:ring-brand-primary focus-within:ring-brand-primary transition'
+          ),
+          classes: {
+            notchedOutline: clsx(classNames?.notchedOutline ?? 'border-0'),
+          },
           onWheel,
           endAdornment: (
             <div className="flex flex-col -my-1.5 -mr-1.5">
@@ -95,29 +110,14 @@ export default function NumberField({
             </div>
           ),
         },
-      }}
-      sx={{
-        width,
-        '& .MuiOutlinedInput-root': {
-          borderRadius: '6px',
-          fontSize: 'var(--text-small)',
-          backgroundColor: 'var(--color-surface-primary)',
-          color: 'var(--color-content-primary)',
-          '& fieldset': {
-            borderColor: 'var(--color-border-primary)',
-          },
-          '&:hover fieldset': {
-            borderColor: 'var(--color-border-primary)',
-          },
-          '&.Mui-focused fieldset': {
-            borderColor: 'var(--color-brand-primary)',
-            borderWidth: '1px',
-          },
-        },
-        '& .MuiOutlinedInput-input': {
-          padding: '6px 8px',
-          caretColor: 'transparent',
-          cursor: 'default',
+        htmlInput: {
+          className: clsx(
+            classNames?.htmlInput ?? 'py-1.5 px-2 caret-transparent cursor-default'
+          ),
+          readOnly: true,
+          inputMode: 'none',
+          onKeyDown: blockTyping,
+          onPaste: blockPaste,
         },
       }}
     />

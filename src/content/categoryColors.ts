@@ -1,4 +1,4 @@
-import type { EventCategory } from '../../types'
+import type { EventCategory } from './types'
 
 // Ordered red → violet along the visible spectrum, with misc (gray) last as
 // the catch-all. Object iteration order drives the category dropdown order.
@@ -14,3 +14,5 @@ export const CATEGORY_COLOR: Record<EventCategory, string> = {
   social: 'bg-pink-500',
   misc: 'bg-gray-500',
 }
+
+export const CATEGORIES = Object.keys(CATEGORY_COLOR) as EventCategory[]

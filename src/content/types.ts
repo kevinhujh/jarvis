@@ -47,3 +47,13 @@ export type CalendarEvent = EventCore & {
   row: EventRow
   flexible: boolean
 }
+
+// --- Generic facet-filter types (consumed by useFacetFilter) ---
+
+export type Prim = string | number | boolean
+
+export type Accessor<T> = (item: T) => Prim | Prim[] | null | undefined
+
+export type Accessors<K extends string, T> = Record<K, Accessor<T>>
+
+export type Facets<K extends string> = Record<K, Prim[]>

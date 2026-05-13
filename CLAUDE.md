@@ -67,6 +67,8 @@ With this in place, plain Tailwind utility classes on MUI components (`<Divider 
 
 **Components** — `src/content/components/` holds reusable wrappers around MUI components. Inside a wrapper, import the MUI component under an alias (e.g. `Popover as MUIPopover`) to avoid a namespace clash with the wrapper's own export name.
 
+**Hooks** — `src/content/hooks/` holds reusable hooks that aren't tied to a specific context. Context consumer hooks (`useXContext`) live with their context per the Context pattern above; hooks placed in `hooks/` are generic and composable (e.g. `useFacetFilter` for inclusion/exclusion filtering on arbitrary item shapes). Pure transformation hooks here own *no* state — state lives with the consumer, the hook only computes derived values from inputs.
+
 **Utilities** — `src/content/utils/` holds pure functions with no React dependencies, organized by concern (e.g. `time.ts` for date and time helpers). Module-specific constants stay co-located (e.g. `weektimetable/constants.ts`).
 
 **Layout constants** — pixel-precise alignment between sibling components (e.g. `DayLabelColumn` cell heights matching `DayRow` heights) is enforced via shared JS constants in a co-located `constants.ts`, applied through inline `style={}` props. Avoid encoding these values in Tailwind classes — Tailwind arbitrary values cannot be referenced across files. One constant is the source of truth; others are derived from it (e.g. `DAY_ROW_HEIGHT = EVENT_ROW_HEIGHT * ROWS_PER_DAY`).

@@ -1,6 +1,7 @@
 import clsx from 'clsx'
 import LocationPinIcon from '@mui/icons-material/LocationPin'
-import { DAY_ROW_HEIGHT, TIME_AXIS_HEIGHT, SCROLLBAR_SIZE } from './constants'
+import { DAY_ROW_HEIGHT, TIME_AXIS_HEIGHT } from './constants'
+import { SCROLLBAR_SIZE } from '../../constants'
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']

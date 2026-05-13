@@ -2,7 +2,7 @@ import { useState } from 'react'
 import clsx from 'clsx'
 import { Divider } from '@mui/material'
 import type { CalendarEvent, EventCategory } from '../../types'
-import { CATEGORY_COLOR } from './categoryColors'
+import { CATEGORY_COLOR } from '../../categoryColors'
 import { useTimetableContext } from '../../contexts/timetable/useTimetableContext'
 import { CONFIG_PANEL_WIDTH, MAX_TITLE_LENGTH, MIN_EVENT_DURATION_MINUTES } from './constants'
 import NumberField from '../../components/NumberField'
@@ -53,9 +53,7 @@ export default function EventConfigPanel({ event, onClose }: Props) {
     if (startTime + duration > 24) return setError('Event would extend past midnight')
 
     const geometryChanged =
-      day !== event.day ||
-      startTime !== event.startTime ||
-      duration !== event.duration
+      day !== event.day || startTime !== event.startTime || duration !== event.duration
 
     if (geometryChanged) {
       const ok = tryRelocateEvent(event.id, { day, startTime, duration })
@@ -74,7 +72,7 @@ export default function EventConfigPanel({ event, onClose }: Props) {
     <div style={{ width: CONFIG_PANEL_WIDTH }} className="p-4 flex flex-col gap-2">
       <label className="flex flex-col gap-1">
         <span className="text-mini text-content-secondary">Title</span>
-        <div className="w-full p-2 rounded-md border border-border-primary bg-surface-primary flex items-center gap-2 focus-within:border-brand-primary">
+        <div className="w-full px-2 py-1.5 rounded-md ring ring-border-primary bg-surface-primary flex items-center gap-2 focus-within:ring-brand-primary">
           <input
             type="text"
             value={title}
@@ -175,7 +173,7 @@ export default function EventConfigPanel({ event, onClose }: Props) {
       <button
         type="button"
         onClick={handleApply}
-        className="w-full py-2 rounded-md bg-brand-primary text-white text-small shadow-sm transition-colors hover:bg-brand-secondary"
+        className="w-full py-2 rounded-md bg-brand-primary text-white text-small shadow-sm transition-colors hover:bg-brand-secondary shadow-sm"
       >
         Apply
       </button>

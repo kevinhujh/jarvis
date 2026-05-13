@@ -1,5 +1,5 @@
 import type { CalendarEvent, EventCategory, EventRow } from '../../types'
-import { CATEGORY_COLOR } from './categoryColors'
+import { CATEGORY_COLOR } from '../../categoryColors'
 
 export type CascadeResult = { success: true; moves: Map<string, number> } | { success: false }
 

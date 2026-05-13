@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import LockIcon from '@mui/icons-material/Lock'
 import { SHORT_THRESHOLD } from './constants'
-import { CATEGORY_COLOR } from './categoryColors'
+import { CATEGORY_COLOR } from '../../categoryColors'
 import type { CalendarEvent } from '../../types'
 import { formatHour } from '../../utils/time'
 import { useTimetableContext } from '../../contexts/timetable/useTimetableContext'

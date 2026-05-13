@@ -125,7 +125,7 @@ function PanelHeader({
 }) {
   return (
     <div className="flex items-center justify-between shrink-0 mb-1">
-      <div className="flex items-center gap-1.5">
+      <div className="flex items-center gap-2">
         <span className="text-mini text-content-secondary uppercase tracking-widest">
           {label}
           {charts.length === 1 && ` · ${charts[0].label}`}
@@ -233,9 +233,14 @@ export function DayDensityPanel({ events, focusedDay }: DayPanelProps) {
   const { selectedDayChart, setSelectedDayChart } = useTimetableContext()
   const { selectedWeekStart } = useDateContext()
 
-  const focusedDate = focusedDay !== null
-    ? new Date(selectedWeekStart.getFullYear(), selectedWeekStart.getMonth(), selectedWeekStart.getDate() + focusedDay)
-    : null
+  const focusedDate =
+    focusedDay !== null
+      ? new Date(
+          selectedWeekStart.getFullYear(),
+          selectedWeekStart.getMonth(),
+          selectedWeekStart.getDate() + focusedDay
+        )
+      : null
   const chip = focusedDate
     ? `${MONTHS[focusedDate.getMonth()]} ${focusedDate.getDate()}`
     : undefined
