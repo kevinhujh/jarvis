@@ -12,7 +12,7 @@ import useFacetFilter from '../../hooks/useFacetFilter'
 import SegmentedToggle from '../../components/SegmentedToggle'
 import type { SegmentedItem } from '../../components/types'
 import { MAX_SEARCH_LENGTH } from './constants'
-import NewTemplatePanel from './NewTemplatePanel'
+import TemplatePanel from './TemplatePanel'
 
 const CATEGORY_ITEMS: SegmentedItem<EventCategory>[] = CATEGORIES.map((c) => ({
   key: c,
@@ -25,7 +25,7 @@ const CATEGORY_ITEMS: SegmentedItem<EventCategory>[] = CATEGORIES.map((c) => ({
 }))
 
 function TemplateCard({ tpl }: { tpl: EventTemplate }) {
-  const { startDrag, endDrag, scrollToTime } = useTimetableContext()
+  const { startDrag, endDrag, scrollToTime, openTemplateEdit } = useTimetableContext()
 
   const durationLabel = formatDuration(tpl.duration)
 
@@ -46,6 +46,10 @@ function TemplateCard({ tpl }: { tpl: EventTemplate }) {
         if (!tpl.flexible) scrollToTime(tpl.startTime)
       }}
       onDragEnd={endDrag}
+      onContextMenu={(e) => {
+        e.preventDefault()
+        openTemplateEdit(tpl.id)
+      }}
       className={clsx(
         'flex items-center justify-between px-2 py-2 rounded-md text-white text-small font-medium select-none cursor-grab active:cursor-grabbing',
         CATEGORY_COLOR[tpl.category]
@@ -168,7 +172,7 @@ export default function EventLibrary() {
         )}
       </div>
 
-      <NewTemplatePanel />
+      <TemplatePanel />
     </div>
   )
 }

@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from 'react'
+import { useState, useCallback, useRef, useEffect, useMemo } from 'react'
 import type { ReactNode } from 'react'
 import { TimetableContext } from './context'
 import type {
@@ -7,11 +7,14 @@ import type {
   EditingEventState,
   EventMetaPatch,
   EventGeometryPatch,
+  TemplatePanelState,
+  TemplatePatch,
 } from './context'
 import type { CalendarEvent, EventRow, EventTemplate } from '../../types'
 import { mockEvents } from '../../modules/weektimetable/mockData'
 import { mockTemplates } from '../../modules/weektimetable/mockTemplates'
 import { computeCascade } from '../../modules/weektimetable/dndUtils'
+import { sortTemplates } from '../../utils/templateOrdering'
 
 type Props = { children: ReactNode }
 
@@ -23,6 +26,7 @@ export default function TimetableProvider({ children }: Props) {
   const [dragSource, setDragSource] = useState<DragSource | null>(null)
   const [guides, setGuides] = useState<GuideState | null>(null)
   const [editingEvent, setEditingEvent] = useState<EditingEventState | null>(null)
+  const [templatePanel, setTemplatePanel] = useState<TemplatePanelState>({ kind: 'closed' })
 
   // Ref keeps tryPlace / tryResize / tryRelocateEvent reading fresh event
   // state without listing events as a dep. Update is deferred to a post-render
@@ -118,10 +122,71 @@ export default function TimetableProvider({ children }: Props) {
     [templates]
   )
 
-  const addTemplate = useCallback((template: Omit<EventTemplate, 'id'>) => {
-    const withId = { ...template, id: crypto.randomUUID() } as EventTemplate
-    setTemplates((prev) => [...prev, withId])
+  // Monotonic createdAt issuer — guarantees strictly increasing timestamps even
+  // when many templates are minted in the same millisecond (bulk import, AI
+  // batch). Seeded from the mock data so newly minted timestamps always sort
+  // after preloaded ones.
+  const lastCreatedAtRef = useRef(
+    mockTemplates.reduce((max, t) => Math.max(max, t.createdAt), 0)
+  )
+  const nextCreatedAt = useCallback(() => {
+    const next = Math.max(lastCreatedAtRef.current + 1, Date.now())
+    lastCreatedAtRef.current = next
+    return next
   }, [])
+
+  const addTemplate = useCallback(
+    (template: TemplatePatch) => {
+      const withMeta = {
+        ...template,
+        id: crypto.randomUUID(),
+        createdAt: nextCreatedAt(),
+      } as EventTemplate
+      setTemplates((prev) => [...prev, withMeta])
+    },
+    [nextCreatedAt]
+  )
+
+  const updateTemplate = useCallback((id: string, patch: TemplatePatch) => {
+    setTemplates((prev) =>
+      prev.map((t) =>
+        t.id === id
+          ? ({ ...patch, id: t.id, createdAt: t.createdAt } as EventTemplate)
+          : t
+      )
+    )
+  }, [])
+
+  // Removing a template unsets the templateId on referencing placed events —
+  // they live on as orphan instances on the user's timeline rather than being
+  // wiped along with the template. Also dismisses the panel if it was editing
+  // the removed template.
+  const removeTemplate = useCallback((id: string) => {
+    setEvents((prev) =>
+      prev.map((e) => (e.templateId === id ? { ...e, templateId: undefined } : e))
+    )
+    setTemplates((prev) => prev.filter((t) => t.id !== id))
+    setTemplatePanel((prev) =>
+      prev.kind === 'edit' && prev.id === id ? { kind: 'closed' } : prev
+    )
+  }, [])
+
+  const openTemplateCreate = useCallback(() => {
+    setTemplatePanel({ kind: 'create' })
+  }, [])
+
+  const openTemplateEdit = useCallback((id: string) => {
+    setTemplatePanel({ kind: 'edit', id })
+  }, [])
+
+  const closeTemplatePanel = useCallback(() => {
+    setTemplatePanel({ kind: 'closed' })
+  }, [])
+
+  // Canonical ordering is part of the registry contract — every consumer of
+  // `templates` sees the same order. See utils/templateOrdering for the layered
+  // comparator.
+  const sortedTemplates = useMemo(() => sortTemplates(templates), [templates])
 
   const tryResize = useCallback((eventId: string, newDuration: number): boolean => {
     const target = eventsRef.current.find((e) => e.id === eventId)
@@ -197,8 +262,14 @@ export default function TimetableProvider({ children }: Props) {
         selectedWeekChart, setSelectedWeekChart,
         selectedDayChart, setSelectedDayChart,
         events,
-        templates,
+        templates: sortedTemplates,
         addTemplate,
+        updateTemplate,
+        removeTemplate,
+        templatePanel,
+        openTemplateCreate,
+        openTemplateEdit,
+        closeTemplatePanel,
         tryPlace,
         tryResize,
         removeEvent,

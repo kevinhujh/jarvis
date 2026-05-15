@@ -23,12 +23,14 @@ export type EventCore = {
 
 export type FlexibleTemplate = EventCore & {
   id: string
+  createdAt: number
   flexible: true
   startTime?: number
 }
 
 export type InflexibleTemplate = EventCore & {
   id: string
+  createdAt: number
   flexible: false
   startTime: number
   repeatDays?: number[]

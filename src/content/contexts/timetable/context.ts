@@ -31,6 +31,13 @@ export type EditingEventState = {
   anchor: { x: number; y: number }
 }
 
+export type TemplatePanelState =
+  | { kind: 'closed' }
+  | { kind: 'create' }
+  | { kind: 'edit'; id: string }
+
+export type TemplatePatch = Omit<EventTemplate, 'id' | 'createdAt'>
+
 export type TimetableContextProps = {
   selectedWeekChart: string
   setSelectedWeekChart: (id: string) => void
@@ -38,7 +45,13 @@ export type TimetableContextProps = {
   setSelectedDayChart: (id: string) => void
   events: CalendarEvent[]
   templates: EventTemplate[]
-  addTemplate: (template: Omit<EventTemplate, 'id'>) => void
+  addTemplate: (template: TemplatePatch) => void
+  updateTemplate: (id: string, patch: TemplatePatch) => void
+  removeTemplate: (id: string) => void
+  templatePanel: TemplatePanelState
+  openTemplateCreate: () => void
+  openTemplateEdit: (id: string) => void
+  closeTemplatePanel: () => void
   tryPlace: (source: DragSource, day: number, row: EventRow, startTime: number) => boolean
   tryResize: (eventId: string, newDuration: number) => boolean
   removeEvent: (id: string) => void
