@@ -2,6 +2,7 @@ import { useState } from 'react'
 import clsx from 'clsx'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
+import LocationPinIcon from '@mui/icons-material/LocationPin'
 import { getWeekStart, buildCalendarWeeks } from '../utils/time'
 import { useDateContext } from '../contexts/date/useDateContext'
 
@@ -30,6 +31,9 @@ export default function MiniCalendar() {
   const month = display.getMonth()
   const weeks = buildCalendarWeeks(year, month)
 
+  const isCurrentMonth = month === today.getMonth() && year === today.getFullYear()
+  const goToCurrentMonth = () => setDisplay(new Date(today.getFullYear(), today.getMonth(), 1))
+
   return (
     <div
       data-testid="mini-calendar"
@@ -39,20 +43,35 @@ export default function MiniCalendar() {
         <button
           onClick={() => setDisplay(new Date(year, month - 1, 1))}
           className={clsx(
-            'w-6 h-6 flex items-center justify-center rounded-full cursor-pointer',
+            'p-1 flex items-center justify-center rounded-full cursor-pointer',
             'text-content-secondary hover:text-content-primary hover:bg-brand-primary/10',
             'transition-colors'
           )}
         >
           <ChevronLeftIcon sx={{ fontSize: 16 }} />
         </button>
-        <span className="text-small font-semibold text-content-primary">
-          {MONTHS[month]} {year}
-        </span>
+        <div className="flex items-center gap-1">
+          <span className="text-small font-semibold text-content-primary">
+            {MONTHS[month]} {year}
+          </span>
+          <button
+            onClick={goToCurrentMonth}
+            disabled={isCurrentMonth}
+            aria-label="Jump to current month"
+            className={clsx(
+              'p-1 flex items-center justify-center rounded-full transition-colors disabled:cursor-default bg-transparent',
+              isCurrentMonth
+                ? 'text-brand-primary'
+                : 'text-content-primary opacity-50 cursor-pointer hover:opacity-100 hover:bg-brand-primary/10'
+            )}
+          >
+            <LocationPinIcon sx={{ fontSize: 16 }} />
+          </button>
+        </div>
         <button
           onClick={() => setDisplay(new Date(year, month + 1, 1))}
           className={clsx(
-            'w-6 h-6 flex items-center justify-center rounded-full cursor-pointer',
+            'p-1 flex items-center justify-center rounded-full cursor-pointer',
             'text-content-secondary hover:text-content-primary hover:bg-brand-primary/10',
             'transition-colors'
           )}

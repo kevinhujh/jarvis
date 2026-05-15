@@ -1,5 +1,9 @@
+import { useState } from 'react'
 import clsx from 'clsx'
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth'
 import LocationPinIcon from '@mui/icons-material/LocationPin'
+import Popover from '../../components/Popover'
+import MiniCalendar from '../MiniCalendar'
 import { DAY_ROW_HEIGHT, TIME_AXIS_HEIGHT } from './constants'
 import { SCROLLBAR_SIZE } from '../../constants'
 
@@ -14,12 +18,35 @@ type Props = {
 }
 
 export default function DayLabelColumn({ days, todayDayIndex, focusedDay, onDayClick }: Props) {
+  const [calendarAnchor, setCalendarAnchor] = useState<HTMLButtonElement | null>(null)
+
   return (
     <div
       data-testid="day-label-column"
-      style={{ paddingTop: TIME_AXIS_HEIGHT, paddingBottom: SCROLLBAR_SIZE }}
+      style={{ paddingBottom: SCROLLBAR_SIZE }}
       className="shrink-0 w-30 flex flex-col rounded-md ring ring-border-primary bg-surface-primary"
     >
+      <div
+        style={{ height: TIME_AXIS_HEIGHT }}
+        className="shrink-0 flex items-center justify-center"
+      >
+        <button
+          type="button"
+          onClick={(e) => setCalendarAnchor(e.currentTarget)}
+          className="flex items-center justify-center bg-transparent text-content-secondary hover:text-content-primary transition-colors"
+        >
+          <CalendarMonthIcon sx={{ fontSize: 20 }} />
+        </button>
+
+        <Popover
+          open={Boolean(calendarAnchor)}
+          anchorEl={calendarAnchor}
+          onClose={() => setCalendarAnchor(null)}
+        >
+          <MiniCalendar />
+        </Popover>
+      </div>
+
       {days.map((date, i) => {
         const isToday = i === todayDayIndex
         const isFocused = i === focusedDay
